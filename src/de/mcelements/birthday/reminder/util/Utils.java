@@ -30,6 +30,7 @@ public class Utils {
                 );
             }
         });
+
         Main.LOGGER.addHandler(handler);
     }
 
