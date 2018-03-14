@@ -1,26 +1,22 @@
 package de.mcelements.birthday.reminder.gui.main;
 
 import de.mcelements.birthday.reminder.Main;
-import de.mcelements.birthday.reminder.gui.settings.SettingsGui;
 import de.mcelements.birthday.reminder.util.Birthday;
 import de.mcelements.birthday.reminder.util.BirthdayList;
 import de.mcelements.birthday.reminder.util.PropertiesUtils;
 import de.mcelements.birthday.reminder.util.Utils;
-import javafx.application.Application;
+import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.stage.Stage;
-import org.omg.PortableInterceptor.LOCATION_FORWARD;
-import org.omg.PortableServer.THREAD_POLICY_ID;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.logging.Logger;
 
 public class MainController {
+    BirthdayList birthdayList = null;
 
     Logger logger = Main.LOGGER;
 
@@ -89,6 +85,7 @@ public class MainController {
     @FXML
     protected void textAreaTyped(){
         System.out.println("textAreaTyped");
+        updateListView(textFieldSearch.getText());
     }
 
 
@@ -116,18 +113,66 @@ public class MainController {
     }
 
     public void updateList(BirthdayList birthdayList){
+        this.birthdayList = birthdayList;
+        updateListView(textFieldSearch.getText());
+    }
+    public void updateListView(){
+        updateListView("");
+    }
+
+    public void updateListView(final String filter){
         listViewPast.getItems().clear();
         final SimpleDateFormat sdf = new SimpleDateFormat(PropertiesUtils.getInstance().getProperty(PropertiesUtils.PropertyType.MESSAGE, "gui.list.date.format"));
         final String format = PropertiesUtils.getInstance().getProperty(PropertiesUtils.PropertyType.MESSAGE, "gui.list.format");
-        for (Birthday birthday : birthdayList.findBirthdays(BirthdayList.BirthdayType.PAST, "")) {
+        clearListView();
+        for (Birthday birthday : birthdayList.findBirthdays(BirthdayList.BirthdayType.PAST, filter)) {
             listViewPast.getItems().add(String.format(format, sdf.format(birthday.getDate()), birthday.getAge(), birthday.getName()));
         }
-        for (Birthday birthday : birthdayList.findBirthdays(BirthdayList.BirthdayType.TODAY, "")) {
+        for (Birthday birthday : birthdayList.findBirthdays(BirthdayList.BirthdayType.TODAY, filter)) {
             listViewToday.getItems().add(String.format(format, sdf.format(birthday.getDate()), birthday.getAge(), birthday.getName()));
         }
-        for (Birthday birthday : birthdayList.findBirthdays(BirthdayList.BirthdayType.FUTURE, "")) {
-            listViewFuture.getItems().add(String.format(format, sdf.format(birthday.getDate()), birthday.getAge(), birthday.getName()));
+        for (Birthday birthday : birthdayList.findBirthdays(BirthdayList.BirthdayType.FUTURE, filter)) {
+            listViewFuture.getItems().add(String.format(format, sdf.format(birthday.getDate()), birthday.getAge(true), birthday.getName()));
         }
+
+        listViewPast.setCellFactory(vl -> {
+            ListCell<String> cell = new ListCell<>();
+
+            ContextMenu contextMenu = new ContextMenu();
+
+
+            MenuItem mail = new MenuItem();
+            mail.textProperty().bind(Bindings.format("send mail to %s", cell.itemProperty()));
+            mail.setOnAction(event -> {
+                String item = cell.getItem();
+                System.out.println(item);
+            });
+            MenuItem phone = new MenuItem();
+            phone.textProperty().bind(Bindings.format("call %s", cell.itemProperty()));
+            phone.setOnAction(event -> {
+                String item = cell.getItem();
+                System.out.println(item);
+            });
+
+            contextMenu.getItems().addAll(mail, phone);
+            cell.textProperty().bind(cell.itemProperty());
+            cell.emptyProperty().addListener((obs, wasEmpty, isNowEmpty) -> {
+                if (isNowEmpty) {
+                    cell.setContextMenu(null);
+                } else {
+                    cell.setContextMenu(contextMenu);
+                }
+            });
+
+            return cell;
+        });
+
+    }
+
+    private void clearListView(){
+        listViewPast.getItems().clear();
+        listViewToday.getItems().clear();
+        listViewFuture.getItems().clear();
     }
 
 }

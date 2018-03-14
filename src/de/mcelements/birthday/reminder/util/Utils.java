@@ -6,7 +6,9 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 
+import javax.swing.*;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.Date;
 import java.util.Random;
 import java.util.logging.ConsoleHandler;
@@ -46,7 +48,6 @@ public class Utils {
         PropertiesUtils.getInstance().setProperty(PropertiesUtils.PropertyType.SETTINGS, "path.last", file.getPath());
 
         final BirthdayList birthdayList = new BirthdayList();
-
         Workbook workbook = WorkbookFactory.create(file);
         Sheet sheet = workbook.getSheetAt(0);
         DataFormatter dataFormatter = new DataFormatter();

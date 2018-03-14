@@ -49,6 +49,17 @@ public class Birthday {
         return date;
     }
 
+    public Calendar getCalendar(){
+        return getCalendar(false);
+    }
+
+    public Calendar getCalendar(boolean changeYear){
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        if(changeYear) calendar.set(YEAR, Calendar.getInstance().get(YEAR));
+        return calendar;
+    }
+
     public String getName() {
         return name;
     }
@@ -56,13 +67,21 @@ public class Birthday {
     public String getMail() {
         return mail;
     }
+    public String getMail(boolean notNull) {
+        return mail == null && notNull ? "" : mail;
+    }
 
     public String getPhone() {
         return phone;
     }
-
+    public String getPhone(boolean notNull) {
+        return phone == null && notNull ? "" : phone;
+    }
 
     public int getAge(){
+        return getAge(false);
+    }
+    public int getAge(boolean add){
         Calendar a = getCalendar(getDate());
         Calendar b = getCalendar(new Date());
         int diff = b.get(YEAR) - a.get(YEAR);
@@ -70,7 +89,7 @@ public class Birthday {
                 (a.get(MONTH) == b.get(MONTH) && a.get(DATE) > b.get(DATE))) {
             diff--;
         }
-        return diff;//TODO
+        return diff + ((add) ? 1 : 0);//TODO
     }
 
     private Calendar getCalendar(Date date) {

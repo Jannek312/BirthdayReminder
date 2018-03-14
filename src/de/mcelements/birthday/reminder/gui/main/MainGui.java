@@ -9,6 +9,8 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
+import javax.swing.*;
+import java.io.FileNotFoundException;
 import java.net.URL;
 
 public class MainGui extends Application {
@@ -30,7 +32,22 @@ public class MainGui extends Application {
 
         Main.mainController = loader.getController();
         Main.mainController.updateLanguage(PropertiesUtils.getInstance().getProperty(PropertiesUtils.PropertyType.SETTINGS, "language"));
-        Utils.loadFile(PropertiesUtils.getInstance().getProperty(PropertiesUtils.PropertyType.SETTINGS, "path.last"));
+
+        while (true) {
+            try {
+                Utils.loadFile(PropertiesUtils.getInstance().getProperty(PropertiesUtils.PropertyType.SETTINGS, "path.last"));
+                return;
+            }catch (FileNotFoundException ex){//TODO FileNotFound / Used by another process!
+                    if(JOptionPane.showConfirmDialog(null, PropertiesUtils.getInstance().getProperty(PropertiesUtils.PropertyType.MESSAGE, "file.used.by.another.process")) != 0){
+                        return;
+                    }
+            }catch (Exception ex){
+                JOptionPane.showMessageDialog(null, PropertiesUtils.getInstance().getProperty(PropertiesUtils.PropertyType.MESSAGE, "error.internal", ex.getMessage()));
+                ex.printStackTrace();
+                System.exit(0);
+            }
+        }
+
     }
 
     public static void main(String[] args) {

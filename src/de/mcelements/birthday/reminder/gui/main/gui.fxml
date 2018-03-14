@@ -43,7 +43,7 @@
             <rowConstraints>
                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
             </rowConstraints>
-            <TextField fx:id="textFieldSearch" onKeyTyped="#textAreaTyped" onAction="#textAreaTyped" prefHeight="25.0" prefWidth="340.0" GridPane.columnIndex="1"/>
+            <TextField fx:id="textFieldSearch" onKeyReleased="#textAreaTyped" onAction="#textAreaTyped" prefHeight="25.0" prefWidth="340.0" GridPane.columnIndex="1"/>
             <CheckBox fx:id="checkBoxIgnoreLimit" onAction="#textAreaTyped" mnemonicParsing="false" prefHeight="17.0" prefWidth="316.0" maxWidth="Infinity"
                       text="CheckBox" textAlignment="CENTER" GridPane.columnIndex="3"/>
             <Button fx:id="buttonSettings" onAction="#buttonSettings" mnemonicParsing="false" text="Settings" maxWidth="Infinity" GridPane.columnIndex="5"/>

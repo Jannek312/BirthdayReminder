@@ -1,9 +1,7 @@
 package de.mcelements.birthday.reminder.util;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class BirthdayList {
 
@@ -21,43 +19,34 @@ public class BirthdayList {
         }
     }
 
-    public Birthday[] findBirthdaysPast() {
+    public Birthday[] findBirthdays(BirthdayType type, String filterTemp){ //TODO rewrite!
+        final String filter = (filterTemp != null) ? filterTemp : "";
         Calendar today = Calendar.getInstance();
-        today.set(today.get(Calendar.YEAR), today.get(Calendar.MONTH), today.get(Calendar.DATE),0,0,0);
-
-        return (Birthday[]) birthdays.stream().filter(birthday -> {
-            Calendar birthdayC = Calendar.getInstance();
-            birthdayC.setTime(birthday.getDate());
-            birthdayC.set(Calendar.YEAR, today.get(Calendar.YEAR));
-            return birthdayC.after(today); //TODO?
-        }).toArray();
-    }
-
-    public Birthday[] findBirthdays(BirthdayType type, String filter){
-        return birthdays.toArray(new Birthday[birthdays.size()]);
-    }
-
-    public Birthday[] findBirthdaysToday() {
-        final Calendar current = Calendar.getInstance();
-        current.set(current.get(Calendar.YEAR),current.get(Calendar.MONTH),current.get(Calendar.DATE),0,0,0);
-
-        return (Birthday[]) birthdays.stream().filter(birthday -> {
-            Calendar c = Calendar.getInstance();
-            c.setTime(birthday.getDate());
-            return c.get(Calendar.DAY_OF_YEAR) == current.get(Calendar.DAY_OF_YEAR);
-        }).toArray();
-    }
-
-    public Birthday[] findBirthdaysFuture() {
-        final Calendar current = Calendar.getInstance();
-        current.set(current.get(Calendar.YEAR),current.get(Calendar.MONTH),current.get(Calendar.DATE),0,0,0);
-
-        return (Birthday[]) birthdays.stream().filter(birthday -> {
-            Calendar c = Calendar.getInstance();
-            c.setTime(birthday.getDate());
-            c.set(c.get(Calendar.YEAR),c.get(Calendar.MONTH),c.get(Calendar.DATE),0,0,0);
-            return c.after(current);
-        }).toArray();
+        today.set(Calendar.HOUR_OF_DAY, 0);
+        today.set(Calendar.MINUTE, 0);
+        today.set(Calendar.SECOND, 0);
+        Birthday[] array = null;
+        switch (type){
+            case PAST:
+                array = birthdays.stream().filter(birthday -> birthday.getCalendar(true).before(today) &&
+                        (filter.isEmpty() || !filter.isEmpty() && birthday.getName().contains(filter) ||
+                                birthday.getDate().toString().contains(filter) || birthday.getMail(true).contains(filter) ||
+                                birthday.getPhone(true).contains(filter))).toArray(s -> new Birthday[s]);
+                break;
+            case TODAY:
+                array = birthdays.stream().filter(birthday -> birthday.getCalendar(true).get(Calendar.DAY_OF_YEAR) == today.get(Calendar.DAY_OF_YEAR) &&
+                        (filter.isEmpty() || !filter.isEmpty() && birthday.getName().contains(filter) ||
+                                birthday.getDate().toString().contains(filter) || birthday.getMail(true).contains(filter) ||
+                                birthday.getPhone(true).contains(filter))).toArray(s -> new Birthday[s]);
+                break;
+            case FUTURE:
+                array = birthdays.stream().filter(birthday -> birthday.getCalendar(true).after(today) &&
+                        (filter.isEmpty() || !filter.isEmpty() && birthday.getName().contains(filter) ||
+                                birthday.getDate().toString().contains(filter) || birthday.getMail(true).contains(filter) ||
+                                birthday.getPhone(true).contains(filter))).toArray(s -> new Birthday[s]);
+                break;
+        }
+        return array;
     }
 
     public enum  BirthdayType{
