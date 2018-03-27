@@ -63,11 +63,19 @@ public class PropertiesUtils {
         }
     }
 
+    public boolean containsProperty(PropertyType type, String key){
+        return type.getProperties().containsKey(key);
+    }
+
     public String getProperty(PropertyType propertyType, String key, String... args){
+        return getProperty(propertyType, key, true, args);
+    }
+
+    public String getProperty(PropertyType propertyType, String key, boolean returnKey, String... args){
         Properties properties = propertyType.getProperties();
         if(!properties.containsKey(key)){
             LOGGER.warning("key " + key + " not found in " + propertyType.getPath());
-            return key;
+            return returnKey ? key : null;
         }
         String value = properties.getProperty(key);
         if(args.length != 0)

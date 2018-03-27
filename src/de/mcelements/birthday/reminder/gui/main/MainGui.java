@@ -7,6 +7,7 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
 import javax.swing.*;
@@ -28,26 +29,19 @@ public class MainGui extends Application {
         stage.setMinWidth(600.0);
 
         stage.setScene(scene);
+        System.out.println(Main.class.getResourceAsStream("/favicon.png"));
+        stage.getIcons().add(new Image(Main.class.getResourceAsStream("/favicon.png")));
+
         stage.show();
 
         Main.mainController = loader.getController();
         Main.mainController.updateLanguage(PropertiesUtils.getInstance().getProperty(PropertiesUtils.PropertyType.SETTINGS, "language"));
 
-        while (true) {
-            try {
-                Utils.loadFile(PropertiesUtils.getInstance().getProperty(PropertiesUtils.PropertyType.SETTINGS, "path.last"));
-                return;
-            }catch (FileNotFoundException ex){//TODO FileNotFound / Used by another process!
-                    if(JOptionPane.showConfirmDialog(null, PropertiesUtils.getInstance().getProperty(PropertiesUtils.PropertyType.MESSAGE, "error.internal", ex.getMessage())) != 0){
-                        return;
-                    }
-            }catch (Exception ex){
-                JOptionPane.showMessageDialog(null, PropertiesUtils.getInstance().getProperty(PropertiesUtils.PropertyType.MESSAGE, "error.internal", ex.getMessage()));
-                ex.printStackTrace();
-                System.exit(0);
-            }
+        if(!PropertiesUtils.getInstance().containsProperty(PropertiesUtils.PropertyType.SETTINGS, "path.last")){
+            return;
         }
-
+        JOptionPane.showMessageDialog(null, PropertiesUtils.getInstance().getProperty(PropertiesUtils.PropertyType.SETTINGS, "path.last"));
+        Utils.loadFile(PropertiesUtils.getInstance().getProperty(PropertiesUtils.PropertyType.SETTINGS, "path.last"));
     }
 
     public static void main(String[] args) {
