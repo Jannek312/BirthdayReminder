@@ -1,6 +1,5 @@
 package de.mcelements.birthday.reminder.util;
 
-import com.google.gson.Gson;
 import de.mcelements.birthday.reminder.Main;
 
 import java.io.*;

@@ -38,7 +38,7 @@ public class MainGui extends Application {
                 Utils.loadFile(PropertiesUtils.getInstance().getProperty(PropertiesUtils.PropertyType.SETTINGS, "path.last"));
                 return;
             }catch (FileNotFoundException ex){//TODO FileNotFound / Used by another process!
-                    if(JOptionPane.showConfirmDialog(null, PropertiesUtils.getInstance().getProperty(PropertiesUtils.PropertyType.MESSAGE, "file.used.by.another.process")) != 0){
+                    if(JOptionPane.showConfirmDialog(null, PropertiesUtils.getInstance().getProperty(PropertiesUtils.PropertyType.MESSAGE, "error.internal", ex.getMessage())) != 0){
                         return;
                     }
             }catch (Exception ex){

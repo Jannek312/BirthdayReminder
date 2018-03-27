@@ -1,5 +1,6 @@
 package de.mcelements.birthday.reminder.util;
 
+import java.text.Collator;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -31,19 +32,19 @@ public class BirthdayList {
                 array = birthdays.stream().filter(birthday -> birthday.getCalendar(true).before(today) &&
                         (filter.isEmpty() || !filter.isEmpty() && birthday.getName().contains(filter) ||
                                 birthday.getDate().toString().contains(filter) || birthday.getMail(true).contains(filter) ||
-                                birthday.getPhone(true).contains(filter))).toArray(s -> new Birthday[s]);
+                                birthday.getPhone(true).contains(filter))).sorted(Collections.reverseOrder()).toArray(s -> new Birthday[s]);
                 break;
             case TODAY:
                 array = birthdays.stream().filter(birthday -> birthday.getCalendar(true).get(Calendar.DAY_OF_YEAR) == today.get(Calendar.DAY_OF_YEAR) &&
                         (filter.isEmpty() || !filter.isEmpty() && birthday.getName().contains(filter) ||
                                 birthday.getDate().toString().contains(filter) || birthday.getMail(true).contains(filter) ||
-                                birthday.getPhone(true).contains(filter))).toArray(s -> new Birthday[s]);
+                                birthday.getPhone(true).contains(filter))).sorted().toArray(s -> new Birthday[s]);
                 break;
             case FUTURE:
                 array = birthdays.stream().filter(birthday -> birthday.getCalendar(true).after(today) &&
                         (filter.isEmpty() || !filter.isEmpty() && birthday.getName().contains(filter) ||
                                 birthday.getDate().toString().contains(filter) || birthday.getMail(true).contains(filter) ||
-                                birthday.getPhone(true).contains(filter))).toArray(s -> new Birthday[s]);
+                                birthday.getPhone(true).contains(filter))).sorted().toArray(s -> new Birthday[s]);
                 break;
         }
         return array;
@@ -65,6 +66,10 @@ public class BirthdayList {
         }
 
 
+    }
+
+    public Birthday findBirthdayByName(final String name){
+        return birthdays.stream().filter(birthday -> birthday.getName().contains(name)).findFirst().orElse(null);
     }
 
 }

@@ -9,7 +9,7 @@ import static java.util.Calendar.DATE;
 import static java.util.Calendar.MONTH;
 import static java.util.Calendar.YEAR;
 
-public class Birthday {
+public class Birthday implements Comparable<Birthday>{
 
     private Date date;
     private String name;
@@ -98,11 +98,19 @@ public class Birthday {
         return cal;
     }
 
-
     @Override
     public String toString() {
         return "Name: " + getName() + ", Date: " + new SimpleDateFormat("dd.MM.yyyy").format(getDate()) + ", " +
                 (!(getMail() == null || getMail().equals("")) ? "Mail: " + getMail() : "") +
                 (!(getPhone() == null || getPhone().equals("")) ? " Phone: " + getPhone() : "");
+    }
+
+    @Override
+    public int compareTo(Birthday o) {
+        if(this.getCalendar(true).getTime().getTime() != o.getCalendar(true).getTime().getTime())
+            return this.getCalendar(true).after(o.getCalendar(true)) ? 1 : -1;
+        if(this.getCalendar().getTime().getTime() != o.getCalendar().getTime().getTime())
+            return this.getCalendar().after(o.getCalendar()) ? 1 : -1;
+        return getName().compareTo(o.getName());
     }
 }

@@ -12,7 +12,10 @@ import javafx.scene.control.*;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.text.SimpleDateFormat;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.logging.Logger;
 
 public class MainController {
@@ -75,6 +78,7 @@ public class MainController {
         try {
             Utils.loadFile(chooser.getSelectedFile());
         } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, PropertiesUtils.getInstance().getProperty(PropertiesUtils.PropertyType.MESSAGE, "error.internal", e.getLocalizedMessage()));
             e.printStackTrace();
         }
 
@@ -135,38 +139,55 @@ public class MainController {
             listViewFuture.getItems().add(String.format(format, sdf.format(birthday.getDate()), birthday.getAge(true), birthday.getName()));
         }
 
+        /*
         listViewPast.setCellFactory(vl -> {
             ListCell<String> cell = new ListCell<>();
-
             ContextMenu contextMenu = new ContextMenu();
 
+            Birthday b = birthdayList.findBirthdayByName(cell.itemProperty().getName());
 
-            MenuItem mail = new MenuItem();
-            mail.textProperty().bind(Bindings.format("send mail to %s", cell.itemProperty()));
-            mail.setOnAction(event -> {
-                String item = cell.getItem();
-                System.out.println(item);
-            });
-            MenuItem phone = new MenuItem();
-            phone.textProperty().bind(Bindings.format("call %s", cell.itemProperty()));
-            phone.setOnAction(event -> {
-                String item = cell.getItem();
-                System.out.println(item);
-            });
+            Set<MenuItem> items = new HashSet<>();
+            if(b.getMail() != null && !b.getMail().isEmpty()){
+                MenuItem mail = new MenuItem();
+                mail.textProperty().bind(Bindings.format("send mail to %s", cell.itemProperty()));
+                mail.setOnAction(event -> {
+                    String item = cell.getItem();
+                    System.out.println(item);
+                });
+                items.add(mail);
+            }
 
-            contextMenu.getItems().addAll(mail, phone);
-            cell.textProperty().bind(cell.itemProperty());
-            cell.emptyProperty().addListener((obs, wasEmpty, isNowEmpty) -> {
-                if (isNowEmpty) {
-                    cell.setContextMenu(null);
-                } else {
-                    cell.setContextMenu(contextMenu);
-                }
-            });
+            if(b.getPhone() != null){
+                MenuItem phone = new MenuItem();
+                phone.textProperty().bind(Bindings.format("call %s", cell.itemProperty()));
+                phone.setOnAction(event -> {
+                    String item = cell.getItem();
+                    System.out.println(item);
+                });
+                items.add(phone);
+            }
+
+            if(items.size() > 1){
+                contextMenu.getItems().addAll(items);
+                cell.textProperty().bind(cell.itemProperty());
+                cell.emptyProperty().addListener((obs, wasEmpty, isNowEmpty) -> {
+                    if (isNowEmpty) {
+                        cell.setContextMenu(null);
+                    } else {
+                        cell.setContextMenu(contextMenu);
+                    }
+                });
+            }
 
             return cell;
         });
-
+        */
+        MenuItem mi = new MenuItem("test");
+        mi.textProperty().bind(Bindings.format("TEST %s", "TEST"));
+        mi.setOnAction(event -> {
+            System.out.println(mi.getText());
+        });
+        listViewPast.getItems().add(mi);
     }
 
     private void clearListView(){
@@ -174,5 +195,12 @@ public class MainController {
         listViewToday.getItems().clear();
         listViewFuture.getItems().clear();
     }
+
+    Comparator<Birthday> birthdayComparator = new Comparator<Birthday>() {
+        @Override
+        public int compare(Birthday b1, Birthday b2) {
+            return (b1.getDate().getTime() > b2.getDate().getTime()) ? 1 : 0;
+        }
+    };
 
 }
