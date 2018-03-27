@@ -6,7 +6,6 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 
-import javax.swing.*;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Date;
@@ -45,6 +44,9 @@ public class Utils {
     }
 
     public static void loadFile(File file) throws Exception{
+        if(!file.exists()){
+            throw new FileNotFoundException("");
+        }
         PropertiesUtils.getInstance().setProperty(PropertiesUtils.PropertyType.SETTINGS, "path.last", file.getPath());
 
         final BirthdayList birthdayList = new BirthdayList();

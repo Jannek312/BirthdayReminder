@@ -11,6 +11,7 @@ import javafx.scene.control.*;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.logging.Logger;
@@ -59,7 +60,15 @@ public class MainController {
     protected void buttonLoadFile(){
         logger.info("button load file pressed");
 
-        final JFileChooser chooser = new JFileChooser(PropertiesUtils.getInstance().getProperty(PropertiesUtils.PropertyType.SETTINGS, "path.last"));
+        String path = PropertiesUtils.getInstance().getProperty(PropertiesUtils.PropertyType.SETTINGS, "path.last", false);
+        if(path == null || path.isEmpty()) {
+            try {
+                path = Main.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath();
+            } catch (URISyntaxException e) {}
+        }
+
+
+        final JFileChooser chooser = new JFileChooser(path);
         chooser.setDialogType(JFileChooser.OPEN_DIALOG);
         chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
         chooser.setFileFilter(new FileNameExtensionFilter(PropertiesUtils.getInstance().getProperty(PropertiesUtils.PropertyType.MESSAGE, "file.type.name"), "xls", "xlsx"));//TODO description
@@ -89,10 +98,11 @@ public class MainController {
     }
 
 
-    public void updateLanguage(String luanguage){
-        PropertiesUtils.PropertyType.MESSAGE.copy(PropertiesUtils.PropertyType.valueOf("MESSAGE_"+luanguage.toUpperCase()));
+    public void updateLanguage(String language){
+        PropertiesUtils.PropertyType.MESSAGE.copy(PropertiesUtils.PropertyType.valueOf("MESSAGE_" + language.toUpperCase()));
         PropertiesUtils.PropertyType type = PropertiesUtils.PropertyType.MESSAGE;
         logger.info("change the language to " + type.toString() + "...");
+        PropertiesUtils.getInstance().setProperty(PropertiesUtils.PropertyType.SETTINGS, "language", language.toLowerCase());
 
         System.out.println(type.toString());
 
@@ -121,17 +131,21 @@ public class MainController {
     }
 
     public void updateListView(final String filter){
+        boolean ignoreLimit = checkBoxIgnoreLimit.isSelected();
+        int limitPast = !ignoreLimit ? Integer.parseInt(PropertiesUtils.getInstance().getProperty(PropertiesUtils.PropertyType.SETTINGS, "limit.past")) : -1;
+        int limitFuture = !ignoreLimit ? Integer.parseInt(PropertiesUtils.getInstance().getProperty(PropertiesUtils.PropertyType.SETTINGS, "limit.future")) : -1;
+
         listViewPast.getItems().clear();
         final SimpleDateFormat sdf = new SimpleDateFormat(PropertiesUtils.getInstance().getProperty(PropertiesUtils.PropertyType.MESSAGE, "gui.list.date.format"));
         final String format = PropertiesUtils.getInstance().getProperty(PropertiesUtils.PropertyType.MESSAGE, "gui.list.format");
         clearListView();
-        for (Birthday birthday : birthdayList.findBirthdays(BirthdayList.BirthdayType.PAST, filter)) {
+        for (Birthday birthday : birthdayList.findBirthdays(BirthdayList.BirthdayType.PAST, filter, limitPast)) {
             listViewPast.getItems().add(String.format(format, sdf.format(birthday.getDate()), birthday.getAge(), birthday.getName()));
         }
         for (Birthday birthday : birthdayList.findBirthdays(BirthdayList.BirthdayType.TODAY, filter)) {
             listViewToday.getItems().add(String.format(format, sdf.format(birthday.getDate()), birthday.getAge(), birthday.getName()));
         }
-        for (Birthday birthday : birthdayList.findBirthdays(BirthdayList.BirthdayType.FUTURE, filter)) {
+        for (Birthday birthday : birthdayList.findBirthdays(BirthdayList.BirthdayType.FUTURE, filter, limitFuture)) {
             listViewFuture.getItems().add(String.format(format, sdf.format(birthday.getDate()), birthday.getAge(true), birthday.getName()));
         }
 

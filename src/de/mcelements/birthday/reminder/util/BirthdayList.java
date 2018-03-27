@@ -19,7 +19,11 @@ public class BirthdayList {
         }
     }
 
-    public Birthday[] findBirthdays(BirthdayType type, String filterTemp){ //TODO rewrite!
+    public Birthday[] findBirthdays(BirthdayType type, String filterTemp) { //TODO rewrite!
+        return findBirthdays(type, filterTemp, -1);
+    }
+
+    public Birthday[] findBirthdays(BirthdayType type, String filterTemp, int limit){ //TODO rewrite!
         final String filter = (filterTemp != null) ? filterTemp : "";
         Calendar today = Calendar.getInstance();
         today.set(Calendar.HOUR_OF_DAY, 0);
@@ -29,6 +33,7 @@ public class BirthdayList {
         switch (type){
             case PAST:
                 array = birthdays.stream().filter(birthday -> birthday.getCalendar(true).before(today) &&
+                        ((limit != -1 && birthday.getCalendar(true).getTime().getTime()+(1000*60*60*24*limit) <= System.currentTimeMillis()) || (limit == -1)) &&
                         (filter.isEmpty() || !filter.isEmpty() && birthday.getName().contains(filter) ||
                                 birthday.getDate().toString().contains(filter) || birthday.getMail(true).contains(filter) ||
                                 birthday.getPhone(true).contains(filter))).toArray(s -> new Birthday[s]);
@@ -41,6 +46,7 @@ public class BirthdayList {
                 break;
             case FUTURE:
                 array = birthdays.stream().filter(birthday -> birthday.getCalendar(true).after(today) &&
+                        ((limit != -1 && birthday.getCalendar(true).getTime().getTime()-(1000*60*60*24*limit) >= System.currentTimeMillis()) || (limit == -1)) &&
                         (filter.isEmpty() || !filter.isEmpty() && birthday.getName().contains(filter) ||
                                 birthday.getDate().toString().contains(filter) || birthday.getMail(true).contains(filter) ||
                                 birthday.getPhone(true).contains(filter))).toArray(s -> new Birthday[s]);
