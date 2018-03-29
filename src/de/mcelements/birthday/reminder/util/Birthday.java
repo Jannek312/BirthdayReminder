@@ -1,5 +1,7 @@
 package de.mcelements.birthday.reminder.util;
 
+import de.mcelements.birthday.reminder.Main;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -17,11 +19,18 @@ public class Birthday implements Comparable<Birthday>{
     private String phone;
 
     public Birthday(String date, String name, String mailOrPhone) {
-        try {
-            this.date = new SimpleDateFormat("dd.MM.yyyy").parse(date);
-        } catch (ParseException e) {
-            e.printStackTrace();
+        String[] dateFormat = new String[]{"dd.MM.yyyy", "d.M.y", "dd.MM."};
+        for(String format : dateFormat){
+            try {
+                this.date = new SimpleDateFormat(format).parse(date);
+                break;
+            } catch (ParseException e) {}
         }
+        if(this.date == null){
+            Main.LOGGER.warning("Wrong format for " + date + "! ("+name+")");
+            this.date = new Date();
+        }
+
         this.name = name;
 
         if(mailOrPhone.matches("(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$)")){
@@ -62,6 +71,10 @@ public class Birthday implements Comparable<Birthday>{
 
     public String getName() {
         return name;
+    }
+
+    public String getName(boolean toLowwerCase) {
+        return toLowwerCase ? getName().toLowerCase() : getName();
     }
 
     public String getMail() {

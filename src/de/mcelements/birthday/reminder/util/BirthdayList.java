@@ -1,8 +1,9 @@
 package de.mcelements.birthday.reminder.util;
 
-import java.text.Collator;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
 
 public class BirthdayList {
 
@@ -25,30 +26,33 @@ public class BirthdayList {
     }
 
     public Birthday[] findBirthdays(BirthdayType type, String filterTemp, int limit){ //TODO rewrite!
-        final String filter = (filterTemp != null) ? filterTemp : "";
+        final String filter = (filterTemp != null) ? filterTemp.toLowerCase() : "";
         Calendar today = Calendar.getInstance();
         today.set(Calendar.HOUR_OF_DAY, 0);
         today.set(Calendar.MINUTE, 0);
         today.set(Calendar.SECOND, 0);
         Birthday[] array = null;
+        System.out.println("limit: " + limit);
         switch (type){
             case PAST:
+                today.set(Calendar.DAY_OF_YEAR, today.get(Calendar.DAY_OF_YEAR)-1);
                 array = birthdays.stream().filter(birthday -> birthday.getCalendar(true).before(today) &&
-                        ((limit != -1 && birthday.getCalendar(true).getTime().getTime()+(1000*60*60*24*limit) <= System.currentTimeMillis()) || (limit == -1)) &&
-                        (filter.isEmpty() || !filter.isEmpty() && birthday.getName().contains(filter) ||
+
+                        (!(limit != -1 && birthday.getCalendar(true).getTime().getTime()+(1000*60*60*24*limit) <= System.currentTimeMillis()) || (limit == -1)) &&
+                        (filter.isEmpty() || !filter.isEmpty() && birthday.getName(true).contains(filter) ||
                                 birthday.getDate().toString().contains(filter) || birthday.getMail(true).contains(filter) ||
                                 birthday.getPhone(true).contains(filter))).sorted(Collections.reverseOrder()).toArray(s -> new Birthday[s]);
                 break;
             case TODAY:
                 array = birthdays.stream().filter(birthday -> birthday.getCalendar(true).get(Calendar.DAY_OF_YEAR) == today.get(Calendar.DAY_OF_YEAR) &&
-                        (filter.isEmpty() || !filter.isEmpty() && birthday.getName().contains(filter) ||
+                        (filter.isEmpty() || !filter.isEmpty() && birthday.getName(true).contains(filter) ||
                                 birthday.getDate().toString().contains(filter) || birthday.getMail(true).contains(filter) ||
                                 birthday.getPhone(true).contains(filter))).sorted().toArray(s -> new Birthday[s]);
                 break;
             case FUTURE:
                 array = birthdays.stream().filter(birthday -> birthday.getCalendar(true).after(today) &&
-                        ((limit != -1 && birthday.getCalendar(true).getTime().getTime()-(1000*60*60*24*limit) >= System.currentTimeMillis()) || (limit == -1)) &&
-                        (filter.isEmpty() || !filter.isEmpty() && birthday.getName().contains(filter) ||
+                        (!(limit != -1 && birthday.getCalendar(true).getTime().getTime()-(1000*60*60*24*limit) >= System.currentTimeMillis()) || (limit == -1)) &&
+                        (filter.isEmpty() || !filter.isEmpty() && birthday.getName(true).contains(filter) ||
                                 birthday.getDate().toString().contains(filter) || birthday.getMail(true).contains(filter) ||
                                 birthday.getPhone(true).contains(filter))).sorted().toArray(s -> new Birthday[s]);
                 break;

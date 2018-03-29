@@ -4,11 +4,15 @@ import de.mcelements.birthday.reminder.Main;
 import de.mcelements.birthday.reminder.util.PropertiesUtils;
 import de.mcelements.birthday.reminder.util.Utils;
 import javafx.application.Application;
+import javafx.application.Platform;
+import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
+import javafx.stage.WindowEvent;
 
 import javax.swing.*;
 import java.io.FileNotFoundException;
@@ -29,8 +33,16 @@ public class MainGui extends Application {
         stage.setMinWidth(600.0);
 
         stage.setScene(scene);
-        System.out.println(Main.class.getResourceAsStream("/favicon.png"));
         stage.getIcons().add(new Image(Main.class.getResourceAsStream("/favicon.png")));
+
+        /*
+        stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+            @Override
+            public void handle(WindowEvent event) {
+                stage.setMaximized(true);
+            }
+        });
+        */
 
         stage.show();
 
@@ -40,7 +52,7 @@ public class MainGui extends Application {
         if(!PropertiesUtils.getInstance().containsProperty(PropertiesUtils.PropertyType.SETTINGS, "path.last")){
             return;
         }
-        JOptionPane.showMessageDialog(null, PropertiesUtils.getInstance().getProperty(PropertiesUtils.PropertyType.SETTINGS, "path.last"));
+
         Utils.loadFile(PropertiesUtils.getInstance().getProperty(PropertiesUtils.PropertyType.SETTINGS, "path.last"));
     }
 
