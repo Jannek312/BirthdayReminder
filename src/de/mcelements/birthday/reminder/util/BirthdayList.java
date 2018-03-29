@@ -35,6 +35,7 @@ public class BirthdayList {
         System.out.println("limit: " + limit);
         switch (type){
             case PAST:
+                today.set(Calendar.DAY_OF_YEAR, today.get(Calendar.DAY_OF_YEAR)-1);
                 array = birthdays.stream().filter(birthday -> birthday.getCalendar(true).before(today) &&
 
                         (!(limit != -1 && birthday.getCalendar(true).getTime().getTime()+(1000*60*60*24*limit) <= System.currentTimeMillis()) || (limit == -1)) &&
