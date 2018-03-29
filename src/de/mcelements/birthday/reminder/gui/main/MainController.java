@@ -70,7 +70,6 @@ public class MainController {
             } catch (URISyntaxException e) {}
         }
 
-
         final JFileChooser chooser = new JFileChooser(path);
         chooser.setDialogType(JFileChooser.OPEN_DIALOG);
         chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
