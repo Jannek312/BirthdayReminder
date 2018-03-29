@@ -113,10 +113,13 @@ public class MainController {
         SimpleDateFormat guiSDF = new SimpleDateFormat(PropertiesUtils.getInstance().getProperty(type, "gui.title.date.format"));
         MainGui.stage.setTitle(PropertiesUtils.getInstance().getProperty(type, "gui.title", guiSDF.format(new Date())));
 
-        SimpleDateFormat labelSDF = new SimpleDateFormat(PropertiesUtils.getInstance().getProperty(type, "gui.label.date.format"));
-        labelPast.setText(PropertiesUtils.getInstance().getProperty(type, "gui.label.past", labelSDF.format(new Date())));
-        labelToday.setText(PropertiesUtils.getInstance().getProperty(type, "gui.label.today", labelSDF.format(new Date())));
-        labelFuture.setText(PropertiesUtils.getInstance().getProperty(type, "gui.label.future", labelSDF.format(new Date())));
+        SimpleDateFormat labelSDF = new SimpleDateFormat(PropertiesUtils.getInstance().getProperty(PropertiesUtils.PropertyType.MESSAGE, "gui.label.date.format"));
+        boolean ignoreLimit = checkBoxIgnoreLimit.isSelected();
+        int limitPast = !ignoreLimit ? Integer.parseInt(PropertiesUtils.getInstance().getProperty(PropertiesUtils.PropertyType.SETTINGS, "limit.past")) : -1;
+        int limitFuture = !ignoreLimit ? Integer.parseInt(PropertiesUtils.getInstance().getProperty(PropertiesUtils.PropertyType.SETTINGS, "limit.future")) : -1;
+        labelPast.setText(PropertiesUtils.getInstance().getProperty(PropertiesUtils.PropertyType.MESSAGE, "gui.label.past", labelSDF.format(getDate(limitPast*-1))));
+        labelToday.setText(PropertiesUtils.getInstance().getProperty(PropertiesUtils.PropertyType.MESSAGE, "gui.label.today", labelSDF.format(new Date())));
+        labelFuture.setText(PropertiesUtils.getInstance().getProperty(PropertiesUtils.PropertyType.MESSAGE, "gui.label.future", labelSDF.format(getDate(limitFuture))));
 
         textFieldSearch.setPromptText(PropertiesUtils.getInstance().getProperty(type, "gui.text.search"));
 
@@ -124,6 +127,8 @@ public class MainController {
 
         buttonSettings.setText(PropertiesUtils.getInstance().getProperty(type, "gui.button.settings"));
         buttonLoadFile.setText(PropertiesUtils.getInstance().getProperty(type, "gui.button.load.file"));
+
+        updateListView();
     }
 
     public void updateList(BirthdayList birthdayList){
@@ -131,7 +136,8 @@ public class MainController {
         updateListView(textFieldSearch.getText());
     }
     public void updateListView(){
-        updateListView("");
+        if(textFieldSearch == null || birthdayList == null) return;
+        updateListView(textFieldSearch.getText());
     }
 
     public void updateListView(final String filter){
@@ -152,6 +158,11 @@ public class MainController {
         for (Birthday birthday : birthdayList.findBirthdays(BirthdayList.BirthdayType.FUTURE, filter, limitFuture)) {
             listViewFuture.getItems().add(String.format(format, sdf.format(birthday.getDate()), birthday.getAge(true), birthday.getName()));
         }
+
+        SimpleDateFormat labelSDF = new SimpleDateFormat(PropertiesUtils.getInstance().getProperty(PropertiesUtils.PropertyType.MESSAGE, "gui.label.date.format"));
+        labelPast.setText(PropertiesUtils.getInstance().getProperty(PropertiesUtils.PropertyType.MESSAGE, "gui.label.past", labelSDF.format(getDate(limitPast*-1))));
+        labelToday.setText(PropertiesUtils.getInstance().getProperty(PropertiesUtils.PropertyType.MESSAGE, "gui.label.today", labelSDF.format(new Date())));
+        labelFuture.setText(PropertiesUtils.getInstance().getProperty(PropertiesUtils.PropertyType.MESSAGE, "gui.label.future", labelSDF.format(getDate(limitFuture))));
 
         /*
         listViewPast.setCellFactory(vl -> {
@@ -196,12 +207,6 @@ public class MainController {
             return cell;
         });
         */
-        MenuItem mi = new MenuItem("test");
-        mi.textProperty().bind(Bindings.format("TEST %s", "TEST"));
-        mi.setOnAction(event -> {
-            System.out.println(mi.getText());
-        });
-        listViewPast.getItems().add(mi);
     }
 
     private void clearListView(){
@@ -210,11 +215,8 @@ public class MainController {
         listViewFuture.getItems().clear();
     }
 
-    Comparator<Birthday> birthdayComparator = new Comparator<Birthday>() {
-        @Override
-        public int compare(Birthday b1, Birthday b2) {
-            return (b1.getDate().getTime() > b2.getDate().getTime()) ? 1 : 0;
-        }
-    };
+    private Date getDate(int days){
+        return new Date(System.currentTimeMillis()+(1000*60*60*24*days));
+    }
 
 }
