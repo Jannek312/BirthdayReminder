@@ -1,10 +1,7 @@
 package de.mcelements.birthday.reminder.util;
 
 import de.mcelements.birthday.reminder.Main;
-import org.apache.poi.ss.usermodel.DataFormatter;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.apache.poi.ss.usermodel.*;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -40,12 +37,16 @@ public class Utils {
             logger.warning("loadFile with empty or null file name");
             return;
         }
-        loadFile(new File(fileName));
+        try {
+            loadFile(new File(fileName));
+        }catch (FileNotFoundException ex){
+            ex.printStackTrace();
+        }
     }
 
     public static void loadFile(File file) throws Exception{
         if(!file.exists()){
-            throw new FileNotFoundException("");
+            throw new FileNotFoundException(file.getName());
         }
         PropertiesUtils.getInstance().setProperty(PropertiesUtils.PropertyType.SETTINGS, "path.last", file.getPath());
 
@@ -55,14 +56,18 @@ public class Utils {
         DataFormatter dataFormatter = new DataFormatter();
 
         sheet.forEach(row -> {
+            final String date = dataFormatter.formatCellValue(row.getCell(0));
+            final String name = dataFormatter.formatCellValue(row.getCell(1));
             Birthday birthday = new Birthday(
-                    dataFormatter.formatCellValue(row.getCell(0)),
-                    dataFormatter.formatCellValue(row.getCell(1)),
+                    date,
+                    name,
                     dataFormatter.formatCellValue(row.getCell(2)));
-            birthdayList.add(birthday);
-
-
-            System.out.println(birthday.toString());
+            if(date != null && !date.isEmpty() && name != null && !name.isEmpty()){
+                birthdayList.add(birthday);
+                System.out.println("ADD: " + birthday.toString());
+            } else {
+                System.out.println("ERROR: ");
+            }
         });
 
         workbook.close();

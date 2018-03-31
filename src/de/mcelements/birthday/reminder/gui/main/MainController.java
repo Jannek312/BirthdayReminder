@@ -6,17 +6,23 @@ import de.mcelements.birthday.reminder.util.BirthdayList;
 import de.mcelements.birthday.reminder.util.PropertiesUtils;
 import de.mcelements.birthday.reminder.util.Utils;
 import javafx.beans.binding.Bindings;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.TextField;
+import javafx.scene.input.ContextMenuEvent;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import java.awt.*;
+import java.io.IOException;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 import java.util.logging.Logger;
 
 public class MainController {
@@ -37,7 +43,7 @@ public class MainController {
     protected Label labelFuture;
 
     @FXML
-    protected ListView listViewPast;
+    protected ListView listViewPast = new ListView<Birthday>();
     @FXML
     protected ListView listViewToday;
     @FXML
@@ -144,19 +150,59 @@ public class MainController {
         int limitPast = !ignoreLimit ? Integer.parseInt(PropertiesUtils.getInstance().getProperty(PropertiesUtils.PropertyType.SETTINGS, "limit.past")) : -1;
         int limitFuture = !ignoreLimit ? Integer.parseInt(PropertiesUtils.getInstance().getProperty(PropertiesUtils.PropertyType.SETTINGS, "limit.future")) : -1;
 
-        listViewPast.getItems().clear();
-        final SimpleDateFormat sdf = new SimpleDateFormat(PropertiesUtils.getInstance().getProperty(PropertiesUtils.PropertyType.MESSAGE, "gui.list.date.format"));
-        final String format = PropertiesUtils.getInstance().getProperty(PropertiesUtils.PropertyType.MESSAGE, "gui.list.format");
         clearListView();
+
+
         for (Birthday birthday : birthdayList.findBirthdays(BirthdayList.BirthdayType.PAST, filter, limitPast)) {
-            listViewPast.getItems().add(String.format(format, sdf.format(birthday.getDate()), birthday.getAge(), birthday.getName()));
+            listViewPast.getItems().add(birthday);
+
         }
+
+        ContextMenu contextMenuPast = new ContextMenu();
+        MenuItem itemPhone = new MenuItem(PropertiesUtils.getInstance().getProperty(PropertiesUtils.PropertyType.MESSAGE, "gui.list.phone"));
+        itemPhone.setOnAction(event -> {
+            Birthday birthday = (Birthday) listViewPast.getSelectionModel().getSelectedItem();
+            JOptionPane.showMessageDialog(null, birthday.getPhone(true));
+        });
+
+        MenuItem itemMail = new MenuItem(PropertiesUtils.getInstance().getProperty(PropertiesUtils.PropertyType.MESSAGE, "gui.list.mail"));
+        itemMail.setOnAction(event -> {
+            Birthday birthday = (Birthday) listViewPast.getSelectionModel().getSelectedItem();
+            if(birthday.getMail() != null){
+                final URI uri = URI.create(PropertiesUtils.getInstance().getProperty(PropertiesUtils.PropertyType.MESSAGE, "strings.format.mail", birthday.getMail()));
+                try {
+                    Desktop.getDesktop().mail(uri);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                JOptionPane.showMessageDialog(null, "TODO");//TODO message
+            }
+        });
+
+        contextMenuPast.getItems().addAll(itemPhone, itemMail);
+        listViewPast.setContextMenu(contextMenuPast);
+        listViewPast.setOnContextMenuRequested(new EventHandler<ContextMenuEvent>() {
+
+            @Override
+            public void handle(ContextMenuEvent event) {
+                contextMenuPast.show(listViewPast, event.getScreenX(), event.getScreenY());
+                event.consume();
+            }
+
+        });
+
+
         for (Birthday birthday : birthdayList.findBirthdays(BirthdayList.BirthdayType.TODAY, filter)) {
-            listViewToday.getItems().add(String.format(format, sdf.format(birthday.getDate()), birthday.getAge(), birthday.getName()));
+            listViewToday.getItems().add(birthday.getListText());
         }
+
+
         for (Birthday birthday : birthdayList.findBirthdays(BirthdayList.BirthdayType.FUTURE, filter, limitFuture)) {
-            listViewFuture.getItems().add(String.format(format, sdf.format(birthday.getDate()), birthday.getAge(true), birthday.getName()));
+            listViewFuture.getItems().add(birthday.getListText(true));
         }
+
+
 
         SimpleDateFormat labelSDF = new SimpleDateFormat(PropertiesUtils.getInstance().getProperty(PropertiesUtils.PropertyType.MESSAGE, "gui.label.date.format"));
         labelPast.setText(PropertiesUtils.getInstance().getProperty(PropertiesUtils.PropertyType.MESSAGE, "gui.label.past", labelSDF.format(getDate(limitPast*-1))));
@@ -164,14 +210,18 @@ public class MainController {
         labelFuture.setText(PropertiesUtils.getInstance().getProperty(PropertiesUtils.PropertyType.MESSAGE, "gui.label.future", labelSDF.format(getDate(limitFuture))));
 
         /*
-        listViewPast.setCellFactory(vl -> {
             ListCell<String> cell = new ListCell<>();
             ContextMenu contextMenu = new ContextMenu();
 
-            Birthday b = birthdayList.findBirthdayByName(cell.itemProperty().getName());
+            Birthday b = birthdayList.findBirthdayByName(cell.itemProperty().toString());
+            System.out.println(vl.toString());
+            System.out.println(cell.getText());
+            System.out.println(cell.toString());
+
+            System.out.println(b + ": " + cell.itemProperty().toString());
 
             Set<MenuItem> items = new HashSet<>();
-            if(b.getMail() != null && !b.getMail().isEmpty()){
+            if(b != null && b.getMail() != null && !b.getMail().isEmpty()){
                 MenuItem mail = new MenuItem();
                 mail.textProperty().bind(Bindings.format("send mail to %s", cell.itemProperty()));
                 mail.setOnAction(event -> {
@@ -181,7 +231,7 @@ public class MainController {
                 items.add(mail);
             }
 
-            if(b.getPhone() != null){
+            if(b != null && b.getPhone() != null){
                 MenuItem phone = new MenuItem();
                 phone.textProperty().bind(Bindings.format("call %s", cell.itemProperty()));
                 phone.setOnAction(event -> {
@@ -190,6 +240,16 @@ public class MainController {
                 });
                 items.add(phone);
             }
+
+
+            MenuItem phone = new MenuItem();
+            phone.textProperty().bind(Bindings.format("call %s", cell.itemProperty()));
+            phone.setOnAction(event -> {
+                String item = cell.getItem();
+                System.out.println(item);
+            });
+            items.add(phone);
+
 
             if(items.size() > 1){
                 contextMenu.getItems().addAll(items);

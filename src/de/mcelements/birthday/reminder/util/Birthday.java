@@ -33,14 +33,22 @@ public class Birthday implements Comparable<Birthday>{
 
         this.name = name;
 
-        if(mailOrPhone.matches("(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$)")){
-            mail = mailOrPhone;
-        }else if(mailOrPhone.matches("^[0-9\\/-]+$")){
-            phone = mailOrPhone;
-        }else if(mailOrPhone == null || mailOrPhone.equals("")){
+        String[] mailPhone;
+        if(mailOrPhone.contains("; ")){
+            mailPhone = mailOrPhone.split("; ");
         } else {
-            System.err.println("no mail or phone: " + mailOrPhone);
+            mailPhone = new String[]{mailOrPhone};
         }
+
+        for(String s : mailPhone){
+            if(s.matches("(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$)")){
+                mail = s;
+            }else if(s.matches("^[0-9\\/-]+$")){
+                phone = s;
+            }
+        }
+
+
     }
 
     public Birthday setMail(String mail) {
@@ -111,11 +119,24 @@ public class Birthday implements Comparable<Birthday>{
         return cal;
     }
 
+    public String getListText(){
+        return getListText(false);
+    }
+
+    public String getListText(boolean addYear){
+        final SimpleDateFormat sdf = new SimpleDateFormat(PropertiesUtils.getInstance().getProperty(PropertiesUtils.PropertyType.MESSAGE, "gui.list.date.format"));
+        final String format = PropertiesUtils.getInstance().getProperty(PropertiesUtils.PropertyType.MESSAGE, "gui.list.format");
+        return String.format(format, sdf.format(getDate()), getAge(addYear), getName());
+    }
+
     @Override
     public String toString() {
+        return getListText();
+        /*
         return "Name: " + getName() + ", Date: " + new SimpleDateFormat("dd.MM.yyyy").format(getDate()) + ", " +
                 (!(getMail() == null || getMail().equals("")) ? "Mail: " + getMail() : "") +
                 (!(getPhone() == null || getPhone().equals("")) ? " Phone: " + getPhone() : "");
+        */
     }
 
     @Override

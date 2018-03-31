@@ -79,7 +79,8 @@ public class BirthdayList {
     }
 
     public Birthday findBirthdayByName(final String name){
-        return birthdays.stream().filter(birthday -> birthday.getName().contains(name)).findFirst().orElse(null);
+        return birthdays.stream().filter(birthday -> birthday.getListText().equals(name) ||
+        birthday.getListText(true).equals(name)).findFirst().orElse(null);
     }
 
 }
