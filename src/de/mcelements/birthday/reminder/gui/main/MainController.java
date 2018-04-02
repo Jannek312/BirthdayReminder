@@ -6,6 +6,7 @@ import de.mcelements.birthday.reminder.util.BirthdayList;
 import de.mcelements.birthday.reminder.util.PropertiesUtils;
 import de.mcelements.birthday.reminder.util.Utils;
 import javafx.beans.binding.Bindings;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -157,40 +158,8 @@ public class MainController {
             listViewPast.getItems().add(birthday);
 
         }
-
-        ContextMenu contextMenuPast = new ContextMenu();
-        MenuItem itemPhone = new MenuItem(PropertiesUtils.getInstance().getProperty(PropertiesUtils.PropertyType.MESSAGE, "gui.list.phone"));
-        itemPhone.setOnAction(event -> {
-            Birthday birthday = (Birthday) listViewPast.getSelectionModel().getSelectedItem();
-            JOptionPane.showMessageDialog(null, birthday.getPhone(true));
-        });
-
-        MenuItem itemMail = new MenuItem(PropertiesUtils.getInstance().getProperty(PropertiesUtils.PropertyType.MESSAGE, "gui.list.mail"));
-        itemMail.setOnAction(event -> {
-            Birthday birthday = (Birthday) listViewPast.getSelectionModel().getSelectedItem();
-            if(birthday.getMail() != null){
-                final URI uri = URI.create(PropertiesUtils.getInstance().getProperty(PropertiesUtils.PropertyType.MESSAGE, "strings.format.mail", birthday.getMail()));
-                try {
-                    Desktop.getDesktop().mail(uri);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            } else {
-                JOptionPane.showMessageDialog(null, "TODO");//TODO message
-            }
-        });
-
-        contextMenuPast.getItems().addAll(itemPhone, itemMail);
-        listViewPast.setContextMenu(contextMenuPast);
-        listViewPast.setOnContextMenuRequested(new EventHandler<ContextMenuEvent>() {
-
-            @Override
-            public void handle(ContextMenuEvent event) {
-                contextMenuPast.show(listViewPast, event.getScreenX(), event.getScreenY());
-                event.consume();
-            }
-
-        });
+        System.out.println(listViewPast.getItems().size());
+        setContextMenu(listViewPast);
 
 
         for (Birthday birthday : birthdayList.findBirthdays(BirthdayList.BirthdayType.TODAY, filter)) {
@@ -209,63 +178,7 @@ public class MainController {
         labelToday.setText(PropertiesUtils.getInstance().getProperty(PropertiesUtils.PropertyType.MESSAGE, "gui.label.today", labelSDF.format(new Date())));
         labelFuture.setText(PropertiesUtils.getInstance().getProperty(PropertiesUtils.PropertyType.MESSAGE, "gui.label.future", labelSDF.format(getDate(limitFuture))));
 
-        /*
-            ListCell<String> cell = new ListCell<>();
-            ContextMenu contextMenu = new ContextMenu();
 
-            Birthday b = birthdayList.findBirthdayByName(cell.itemProperty().toString());
-            System.out.println(vl.toString());
-            System.out.println(cell.getText());
-            System.out.println(cell.toString());
-
-            System.out.println(b + ": " + cell.itemProperty().toString());
-
-            Set<MenuItem> items = new HashSet<>();
-            if(b != null && b.getMail() != null && !b.getMail().isEmpty()){
-                MenuItem mail = new MenuItem();
-                mail.textProperty().bind(Bindings.format("send mail to %s", cell.itemProperty()));
-                mail.setOnAction(event -> {
-                    String item = cell.getItem();
-                    System.out.println(item);
-                });
-                items.add(mail);
-            }
-
-            if(b != null && b.getPhone() != null){
-                MenuItem phone = new MenuItem();
-                phone.textProperty().bind(Bindings.format("call %s", cell.itemProperty()));
-                phone.setOnAction(event -> {
-                    String item = cell.getItem();
-                    System.out.println(item);
-                });
-                items.add(phone);
-            }
-
-
-            MenuItem phone = new MenuItem();
-            phone.textProperty().bind(Bindings.format("call %s", cell.itemProperty()));
-            phone.setOnAction(event -> {
-                String item = cell.getItem();
-                System.out.println(item);
-            });
-            items.add(phone);
-
-
-            if(items.size() > 1){
-                contextMenu.getItems().addAll(items);
-                cell.textProperty().bind(cell.itemProperty());
-                cell.emptyProperty().addListener((obs, wasEmpty, isNowEmpty) -> {
-                    if (isNowEmpty) {
-                        cell.setContextMenu(null);
-                    } else {
-                        cell.setContextMenu(contextMenu);
-                    }
-                });
-            }
-
-            return cell;
-        });
-        */
     }
 
     private void clearListView(){
@@ -276,6 +189,92 @@ public class MainController {
 
     private Date getDate(int days){
         return new Date(System.currentTimeMillis()+(1000*60*60*24*days));
+    }
+
+    private void setContextMenu(ListView<Birthday> listView){
+        listView.setCellFactory(lv -> {
+            ListCell<Birthday> cell = new ListCell<>();
+            ContextMenu contextMenu = new ContextMenu();
+
+            Birthday birthday = cell.getItem();
+            System.out.println("Birthday: " + birthday);
+            if(birthday != null){
+
+
+
+
+                Set<MenuItem> items = new HashSet<>();
+
+                if(birthday.getMail() != null){
+                    final String text = PropertiesUtils.getInstance().getProperty(PropertiesUtils.PropertyType.MESSAGE, "gui.list.mail", birthday.getMail(true));
+                    MenuItem item = new MenuItem(text);
+                    item.setOnAction((ActionEvent event) -> {
+                        URI mailURI = URI.create(PropertiesUtils.getInstance().getProperty(PropertiesUtils.PropertyType.MESSAGE, "strings.format.mail", birthday.getMail(true)));
+                        try {
+                            Desktop.getDesktop().mail(mailURI);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    });
+                }
+
+                if(birthday.getPhone() != null){
+                    final String text = PropertiesUtils.getInstance().getProperty(PropertiesUtils.PropertyType.MESSAGE, "gui.list.phone", birthday.getPhone(true));
+                    MenuItem item = new MenuItem(text);
+                    item.setOnAction((ActionEvent event) -> {
+                        JOptionPane.showMessageDialog(null, birthday.getPhone(true));
+                    });
+                }
+
+                if(items.size() > 0)
+                    contextMenu.getItems().addAll(items);
+            }
+
+            cell.textProperty().bind(cell.itemProperty().asString());
+            cell.emptyProperty().addListener((obs, wasEmpty, isNowEmpty) -> {
+                if (isNowEmpty) {
+                    cell.setContextMenu(null);
+                } else {
+                    cell.setContextMenu(contextMenu);
+                }
+            });
+            return cell ;
+        });
+    }
+    private void setContextMenu2(ListView listView){
+        ContextMenu contextMenuPast = new ContextMenu();
+        MenuItem itemPhone = new MenuItem(PropertiesUtils.getInstance().getProperty(PropertiesUtils.PropertyType.MESSAGE, "gui.list.phone"));
+        itemPhone.setOnAction(event -> {
+            Birthday birthday = (Birthday) listView.getSelectionModel().getSelectedItem();
+            JOptionPane.showMessageDialog(null, birthday.getPhone(true));
+        });
+
+        MenuItem itemMail = new MenuItem(PropertiesUtils.getInstance().getProperty(PropertiesUtils.PropertyType.MESSAGE, "gui.list.mail"));
+        itemMail.setOnAction(event -> {
+            Birthday birthday = (Birthday) listView.getSelectionModel().getSelectedItem();
+            if(birthday.getMail() != null){
+                final URI uri = URI.create(PropertiesUtils.getInstance().getProperty(PropertiesUtils.PropertyType.MESSAGE, "strings.format.mail", birthday.getMail()));
+                try {
+                    Desktop.getDesktop().mail(uri);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                JOptionPane.showMessageDialog(null, "TODO");//TODO message
+            }
+        });
+
+        contextMenuPast.getItems().addAll(itemPhone, itemMail);
+        listView.setContextMenu(contextMenuPast);
+        listView.setOnContextMenuRequested(new EventHandler<ContextMenuEvent>() {
+
+            @Override
+            public void handle(ContextMenuEvent event) {
+                contextMenuPast.show(listView, event.getScreenX(), event.getScreenY());
+                event.consume();
+            }
+
+        });
     }
 
 }

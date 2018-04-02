@@ -1,5 +1,6 @@
 package de.mcelements.birthday.reminder;
 
+import de.mcelements.birthday.reminder.util.Birthday;
 import javafx.application.Application;
 import javafx.beans.binding.Bindings;
 import javafx.scene.Scene;
@@ -14,20 +15,28 @@ public class ListViewContextMenuExample extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        ListView<String> listView = new ListView<>();
-        listView.getItems().addAll("One", "Two", "Three");
+        ListView<Birthday> listView = new ListView<>();
+        listView.getItems().addAll(
+                new Birthday("13.06.1999", "Jannek Behrens", "+4917662272188"),
+                new Birthday("31.03.1929", "Hans Sommer", "hans.sommer@gmail.com")
+
+        );
 
         listView.setCellFactory(lv -> {
 
-            ListCell<String> cell = new ListCell<>();
-
+            ListCell<Birthday> cell = new ListCell<>();
             ContextMenu contextMenu = new ContextMenu();
+
+
+
+            System.out.println("Item: " + cell);
 
 
             MenuItem editItem = new MenuItem();
             editItem.textProperty().bind(Bindings.format("Edit \"%s\"", cell.itemProperty()));
             editItem.setOnAction(event -> {
-                String item = cell.getItem();
+                Birthday b = cell.getItem();
+                System.out.println(b.getMail());
                 // code to edit item...
             });
             MenuItem deleteItem = new MenuItem();
@@ -35,7 +44,7 @@ public class ListViewContextMenuExample extends Application {
             deleteItem.setOnAction(event -> listView.getItems().remove(cell.getItem()));
             contextMenu.getItems().addAll(editItem, deleteItem);
 
-            cell.textProperty().bind(cell.itemProperty());
+            cell.textProperty().bind(cell.itemProperty().asString());
 
             cell.emptyProperty().addListener((obs, wasEmpty, isNowEmpty) -> {
                 if (isNowEmpty) {
@@ -44,6 +53,9 @@ public class ListViewContextMenuExample extends Application {
                     cell.setContextMenu(contextMenu);
                 }
             });
+
+            System.out.println(cell.getItem());
+
             return cell ;
         });
 

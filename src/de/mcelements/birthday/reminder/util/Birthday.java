@@ -131,12 +131,10 @@ public class Birthday implements Comparable<Birthday>{
 
     @Override
     public String toString() {
-        return getListText();
-        /*
         return "Name: " + getName() + ", Date: " + new SimpleDateFormat("dd.MM.yyyy").format(getDate()) + ", " +
                 (!(getMail() == null || getMail().equals("")) ? "Mail: " + getMail() : "") +
                 (!(getPhone() == null || getPhone().equals("")) ? " Phone: " + getPhone() : "");
-        */
+        //return getListText();
     }
 
     @Override
