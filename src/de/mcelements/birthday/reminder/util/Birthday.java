@@ -61,7 +61,6 @@ public class Birthday implements Comparable<Birthday>{
         return this;
     }
 
-
     public Date getDate() {
         return date;
     }
@@ -120,21 +119,34 @@ public class Birthday implements Comparable<Birthday>{
     }
 
     public String getListText(){
-        return getListText(false);
+        return getListText(this.getCalendar(true).getTime().getTime() > System.currentTimeMillis());
     }
 
     public String getListText(boolean addYear){
         final SimpleDateFormat sdf = new SimpleDateFormat(PropertiesUtils.getInstance().getProperty(PropertiesUtils.PropertyType.MESSAGE, "gui.list.date.format"));
         final String format = PropertiesUtils.getInstance().getProperty(PropertiesUtils.PropertyType.MESSAGE, "gui.list.format");
-        return String.format(format, sdf.format(getDate()), getAge(addYear), getName());
+
+        String contact = "";
+        if(this.getMail() != null) {
+            contact += "✉";
+        }
+        if(this.getPhone() != null) {
+            contact += "✆";
+        }
+        if(!contact.isEmpty())
+            contact = " ("+contact+")";
+        final String s = String.format(format, sdf.format(getDate()), getAge(addYear), getName())+contact;
+        return s;
     }
 
     @Override
     public String toString() {
+        /*
         return "Name: " + getName() + ", Date: " + new SimpleDateFormat("dd.MM.yyyy").format(getDate()) + ", " +
                 (!(getMail() == null || getMail().equals("")) ? "Mail: " + getMail() : "") +
                 (!(getPhone() == null || getPhone().equals("")) ? " Phone: " + getPhone() : "");
-        //return getListText();
+        */
+        return getListText();
     }
 
     @Override
