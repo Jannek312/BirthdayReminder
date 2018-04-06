@@ -68,14 +68,19 @@ public class PropertiesUtils {
     }
 
     public String getProperty(PropertyType propertyType, String key, String... args){
-        return getProperty(propertyType, key, true, args);
+        return getPropertyOrDefault(propertyType, key, "KEY", args);
     }
 
-    public String getProperty(PropertyType propertyType, String key, boolean returnKey, String... args){
+    public String getProperty(PropertyType propertyType, String key, boolean returnNull, String... args){
+        String s = (returnNull) ? null : "KEY";
+        return getPropertyOrDefault(propertyType, key, s, args);
+    }
+
+    public String getPropertyOrDefault(PropertyType propertyType, String key, String defaultValue, String... args){
         Properties properties = propertyType.getProperties();
         if(!properties.containsKey(key)){
             LOGGER.warning("key " + key + " not found in " + propertyType.getPath());
-            return returnKey ? key : null;
+            return defaultValue.equals("KEY") ? key : defaultValue;
         }
         String value = properties.getProperty(key);
         if(args.length != 0)

@@ -15,6 +15,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextField;
 import javafx.scene.input.ContextMenuEvent;
+import javafx.scene.text.Font;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -241,9 +242,29 @@ public class MainController {
     }
 
     private void setContextMenuNew(ListView<Birthday> listView){
+        final String fontName = PropertiesUtils.getInstance().getPropertyOrDefault(PropertiesUtils.PropertyType.SETTINGS, "gui.list.font.name", "Arial");
+        String size = PropertiesUtils.getInstance().getPropertyOrDefault(PropertiesUtils.PropertyType.SETTINGS, "gui.list.font.size", "12");
+        int i = 12;
+        try {
+            i = Integer.parseInt(size);
+        }catch (Exception ex){}
+        final int fontSize = i;
+
+        Font font1;
+        try{
+            font1 = new Font(fontName, fontSize);
+        }catch (Exception e){
+            font1 = new Font(fontSize);
+        }
+        if(font1 == null)
+            font1 = new Font(12);
+
+        final Font font = font1;
+
         listView.setCellFactory(lv -> {
             ListCell<Birthday> cell = new ListCell<>();
             ContextMenu contextMenu = new ContextMenu();
+            cell.setFont(font);
 
             MenuItem mail = new MenuItem(PropertiesUtils.getInstance().getProperty(PropertiesUtils.PropertyType.MESSAGE, "gui.list.mail"));
             mail.setOnAction((ActionEvent event) -> {
