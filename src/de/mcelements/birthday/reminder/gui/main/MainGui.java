@@ -4,19 +4,11 @@ import de.mcelements.birthday.reminder.Main;
 import de.mcelements.birthday.reminder.util.PropertiesUtils;
 import de.mcelements.birthday.reminder.util.Utils;
 import javafx.application.Application;
-import javafx.application.Platform;
-import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
-import javafx.stage.WindowEvent;
-
-import javax.swing.*;
-import java.io.FileNotFoundException;
-import java.net.URL;
 
 public class MainGui extends Application {
 
@@ -47,7 +39,7 @@ public class MainGui extends Application {
         stage.show();
 
         Main.mainController = loader.getController();
-        Main.mainController.updateLanguage(PropertiesUtils.getInstance().getProperty(PropertiesUtils.PropertyType.SETTINGS, "language"));
+        Utils.updateLanguage(PropertiesUtils.getInstance().getProperty(PropertiesUtils.PropertyType.SETTINGS, "language"));
 
         if(!PropertiesUtils.getInstance().containsProperty(PropertiesUtils.PropertyType.SETTINGS, "path.last")){
             return;

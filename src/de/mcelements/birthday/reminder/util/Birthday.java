@@ -7,9 +7,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
-import static java.util.Calendar.DATE;
-import static java.util.Calendar.MONTH;
-import static java.util.Calendar.YEAR;
+import static java.util.Calendar.*;
 
 public class Birthday implements Comparable<Birthday>{
 
@@ -23,12 +21,19 @@ public class Birthday implements Comparable<Birthday>{
         for(String format : dateFormat){
             try {
                 this.date = new SimpleDateFormat(format).parse(date);
+                if(format.equals(dateFormat[2])){
+                    Calendar c = Calendar.getInstance();
+                    c.setTime(this.date);
+                    c.set(YEAR, 1);
+                    this.date = c.getTime();
+                }
                 break;
             } catch (ParseException e) {}
         }
         if(this.date == null){
             Main.LOGGER.warning("Wrong format for " + date + "! ("+name+")");
             this.date = new Date();
+            this.date.setYear(0);
         }
 
         this.name = name;
@@ -47,8 +52,6 @@ public class Birthday implements Comparable<Birthday>{
                 phone = s;
             }
         }
-
-
     }
 
     public Birthday setMail(String mail) {
@@ -123,9 +126,6 @@ public class Birthday implements Comparable<Birthday>{
     }
 
     public String getListText(boolean addYear){
-        final SimpleDateFormat sdf = new SimpleDateFormat(PropertiesUtils.getInstance().getProperty(PropertiesUtils.PropertyType.MESSAGE, "gui.list.date.format"));
-        final String format = PropertiesUtils.getInstance().getProperty(PropertiesUtils.PropertyType.MESSAGE, "gui.list.format");
-
         String contact = "";
         if(this.getMail() != null) {
             contact += "✉";
@@ -135,8 +135,16 @@ public class Birthday implements Comparable<Birthday>{
         }
         if(!contact.isEmpty())
             contact = " ("+contact+")";
-        final String s = String.format(format, sdf.format(getDate()), getAge(addYear), getName())+contact;
-        return s;
+
+        if(getCalendar().get(YEAR) == 1){
+            final SimpleDateFormat sdf = new SimpleDateFormat(PropertiesUtils.getInstance().getProperty(PropertiesUtils.PropertyType.MESSAGE, "gui.list.no.year.date.format"));
+            final String format = PropertiesUtils.getInstance().getProperty(PropertiesUtils.PropertyType.MESSAGE, "gui.list.no.year.format");
+            return String.format(format, sdf.format(getDate()), getName())+contact;
+        } else {
+            final SimpleDateFormat sdf = new SimpleDateFormat(PropertiesUtils.getInstance().getProperty(PropertiesUtils.PropertyType.MESSAGE, "gui.list.date.format"));
+            final String format = PropertiesUtils.getInstance().getProperty(PropertiesUtils.PropertyType.MESSAGE, "gui.list.format");
+            return String.format(format, sdf.format(getDate()), getAge(addYear), getName())+contact;
+        }
     }
 
     @Override

@@ -98,40 +98,46 @@ public class PropertiesUtils {
     }
 
     public enum PropertyType {
-        CONFIG("cfg", "/config.properties", true),
-        MESSAGE("msg"),
-        MESSAGE_DE("msg_de", "/de_message.properties", true),
-        MESSAGE_EN("msg_en", "/en_message.properties", true),
-        SETTINGS_DEFAULT("set_def", "/settings.properties", true),
-        SETTINGS("set", "settings.properties", false, PropertyType.SETTINGS_DEFAULT);
+        CONFIG("cfg", "Config", "/config.properties", true),
+        MESSAGE("msg", "Message"),
+        MESSAGE_DE("msg_de", "Deutsch", "/de_message.properties", true),
+        MESSAGE_EN("msg_en", "English", "/en_message.properties", true),
+        SETTINGS_DEFAULT("set_def", "Default Settings", "/settings.properties", true),
+        SETTINGS("set", "Settings", "settings.properties", false, PropertyType.SETTINGS_DEFAULT);
 
         final private String key;
+        final private String displayName;
         private Properties properties = new Properties();
         private final String path;
         private final Boolean internal;
         private final PropertyType copy;
 
-        PropertyType(String key){
+        PropertyType(String key, String displayName){
             this.key = key;
+            this.displayName = displayName;
             this.path = null;
             this.internal = null;
             this.copy = null;
         }
 
-        PropertyType(String key, String path, boolean internal) {
+        PropertyType(String key, String displayName, String path, boolean internal) {
             this.key = key;
+            this.displayName = displayName;
             this.path = path;
             this.internal = internal;
             this.copy = null;
         }
 
-        PropertyType(String key, String path, boolean internal, PropertyType copy) {
+        PropertyType(String key, String displayName, String path, boolean internal, PropertyType copy) {
             this.key = key;
+            this.displayName = displayName;
             this.path = path;
             this.internal = internal;
             this.copy = copy;
         }
 
+        public String getKey(){return key;}
+        public String getDisplayName() {return displayName;}
         private Properties getProperties() {return properties;}
         private String getPath() {return path;}
         private Boolean isInternal() {return internal;}

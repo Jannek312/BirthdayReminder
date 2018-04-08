@@ -1,12 +1,19 @@
 package de.mcelements.birthday.reminder.util;
 
 import de.mcelements.birthday.reminder.Main;
-import org.apache.poi.ss.usermodel.*;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import org.apache.poi.ss.usermodel.DataFormatter;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Date;
-import java.util.Random;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Formatter;
 import java.util.logging.LogRecord;
@@ -74,9 +81,58 @@ public class Utils {
         Main.mainController.updateList(birthdayList);
     }
 
-    public static void test(){
-        Main.mainController.updateLanguage((new Random().nextInt(2) == 1) ? "de" : "en");
+    public static class FXML{
+        public FXML(final String filename){
+            Stage stage = new Stage();
+            FXMLLoader loader;
+            Parent parent;
+            try {
+                loader = new FXMLLoader(Main.class.getResource(filename));
+                parent = loader.load();
+            } catch (Exception e) {
+                e.printStackTrace();
+                return;
+            }
+
+            Scene scene = new Scene(parent);
+            stage.setScene(scene);
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.show();
+
+            if(filename.contains("settingsGui.fxml"))
+                Main.settingsController = loader.getController();
+        }
     }
+
+    public static void updateLanguage(final String language){
+        PropertiesUtils.PropertyType lang = null;
+        for (PropertiesUtils.PropertyType type : PropertiesUtils.PropertyType.values()) {
+            if(type.name().equals(language.toUpperCase()) || type.name().equals("MESSAGE_"+language.toUpperCase()) ||
+                    type.getKey().equals(language) || type.getDisplayName().equals(language)){
+                lang = type;
+                System.out.println("set to " + type.name());
+            }
+        }
+        if(lang == null){
+            logger.warning("PropertyType " + language + " not found!");
+            return;
+        }
+        PropertiesUtils.PropertyType.MESSAGE.copy(lang);
+
+        PropertiesUtils.PropertyType type = PropertiesUtils.PropertyType.MESSAGE;
+        logger.info("change the language to " + type.toString() + "...");
+        PropertiesUtils.getInstance().setProperty(PropertiesUtils.PropertyType.SETTINGS, "language", language.toLowerCase());
+
+        System.out.println(type.toString());
+
+        Main.mainController.updateLanguage();
+        if(Main.settingsController != null)
+            Main.settingsController.updateLanguage();
+    }
+
+
+
+
 
 
 

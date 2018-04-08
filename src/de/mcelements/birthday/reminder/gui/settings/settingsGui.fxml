@@ -1,11 +1,77 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" prefHeight="200.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.mcelements.birthday.reminder.gui.settings.SettingsController">
+    <columnConstraints>
+        <ColumnConstraints />
+        <ColumnConstraints hgrow="SOMETIMES" maxWidth="10.0" prefWidth="100.0" />
+        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+        <ColumnConstraints hgrow="SOMETIMES" maxWidth="10.0" prefWidth="100.0" />
+        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+        <ColumnConstraints hgrow="SOMETIMES" maxWidth="10.0" prefWidth="100.0" />
+    </columnConstraints>
+    <rowConstraints>
+        <RowConstraints maxHeight="10.0" minHeight="10.0" vgrow="SOMETIMES" />
+        <RowConstraints maxHeight="20.0" prefHeight="15.0" vgrow="SOMETIMES" />
+        <RowConstraints maxHeight="10.0" minHeight="10.0" vgrow="SOMETIMES" />
+        <RowConstraints maxHeight="20.0" prefHeight="15.0" vgrow="SOMETIMES" />
+        <RowConstraints maxHeight="10.0" minHeight="10.0" vgrow="SOMETIMES" />
+        <RowConstraints maxHeight="20.0" prefHeight="15.0" vgrow="SOMETIMES" />
+        <RowConstraints maxHeight="10.0" minHeight="10.0" vgrow="SOMETIMES" />
+        <RowConstraints maxHeight="20.0" prefHeight="15.0" vgrow="SOMETIMES" />
+        <RowConstraints maxHeight="10.0" minHeight="10.0" vgrow="SOMETIMES" />
+        <RowConstraints maxHeight="20.0" prefHeight="15.0" vgrow="SOMETIMES" />
+        <RowConstraints maxHeight="10.0" minHeight="10.0" vgrow="SOMETIMES" />
+        <RowConstraints maxHeight="20.0" prefHeight="15.0" vgrow="SOMETIMES" />
+        <RowConstraints maxHeight="10.0" minHeight="10.0" vgrow="SOMETIMES" />
+        <RowConstraints maxHeight="20.0" prefHeight="15.0" vgrow="SOMETIMES" />
+        <RowConstraints maxHeight="10.0" minHeight="10.0" vgrow="SOMETIMES" />
+    </rowConstraints>
+    <children>
 
+        <Label fx:id="labelLimitPast" text="Limit Past" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+        <Label fx:id="labelLimitFuture" text="Limit Future" GridPane.columnIndex="2" GridPane.rowIndex="3" />
+        <Label fx:id="labelDailyStart" text="Daily start" GridPane.columnIndex="2" GridPane.rowIndex="5" />
+        <Label fx:id="labelLanguage" text="Language" GridPane.columnIndex="2" GridPane.rowIndex="7" />
+        <Label fx:id="labelFontSize" text="Font size" GridPane.columnIndex="2" GridPane.rowIndex="9" />
+        <Label fx:id="labelFontName" text="Font name" GridPane.columnIndex="2" GridPane.rowIndex="11" />
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1">
-   <children>
-      <Button layoutX="-38.0" layoutY="-100.0" mnemonicParsing="false" text="Button" />
-   </children>
-</AnchorPane>
+        <TextField fx:id="textLimitPast" onAction="#onTextLimitPast" GridPane.columnIndex="4" GridPane.rowIndex="1" />
+        <TextField fx:id="textLimitFuture" onAction="#onTextLimitFuture" GridPane.columnIndex="4" GridPane.rowIndex="3" />
+
+        <TextField fx:id="textDailyStart" onAction="#onTextDailyStart" GridPane.columnIndex="4" GridPane.rowIndex="5" />
+
+        <MenuButton fx:id="menuLanguage" mnemonicParsing="false" onAction="#onMenuLanguage" text="MenuButton" GridPane.columnIndex="4" GridPane.rowIndex="7">
+            <items>
+                <MenuItem mnemonicParsing="false" text="Action 1" />
+                <MenuItem mnemonicParsing="false" text="Action 2" />
+            </items>
+        </MenuButton>
+
+        <TextField fx:id="textFontSize" onAction="#onTextFontSize" GridPane.columnIndex="4" GridPane.rowIndex="9" />
+        <TextField fx:id="textFontName" onAction="#onTextFontName" GridPane.columnIndex="4" GridPane.rowIndex="11" />
+
+        <Button fx:id="buttonApply" mnemonicParsing="false" onAction="#onButtonApply" text="Apply" GridPane.columnIndex="2" GridPane.rowIndex="13" />
+        <Button fx:id="buttonCancel" mnemonicParsing="false" onAction="#onButtonCancel" text="Cancel" GridPane.columnIndex="4" GridPane.rowIndex="13" />
+
+        <Separator prefWidth="200.0" GridPane.columnIndex="2" GridPane.rowIndex="2" />
+        <Separator prefWidth="200.0" GridPane.columnIndex="4" GridPane.rowIndex="2" />
+
+        <Separator prefWidth="200.0" GridPane.columnIndex="2" GridPane.rowIndex="4" />
+        <Separator prefWidth="200.0" GridPane.columnIndex="4" GridPane.rowIndex="4" />
+
+        <Separator prefWidth="200.0" GridPane.columnIndex="2" GridPane.rowIndex="6" />
+        <Separator prefWidth="200.0" GridPane.columnIndex="4" GridPane.rowIndex="6" />
+
+        <Separator prefWidth="200.0" GridPane.columnIndex="2" GridPane.rowIndex="8" />
+        <Separator prefWidth="200.0" GridPane.columnIndex="4" GridPane.rowIndex="8" />
+
+        <Separator prefWidth="200.0" GridPane.columnIndex="2" GridPane.rowIndex="10" />
+        <Separator prefWidth="200.0" GridPane.columnIndex="4" GridPane.rowIndex="10" />
+
+        <Separator prefWidth="200.0" GridPane.columnIndex="2" GridPane.rowIndex="12" />
+        <Separator prefWidth="200.0" GridPane.columnIndex="4" GridPane.rowIndex="12" />
+
+    </children>
+</GridPane>
