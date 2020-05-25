@@ -9,7 +9,7 @@ import java.util.Date;
 
 import static java.util.Calendar.*;
 
-public class Birthday implements Comparable<Birthday>{
+public class Birthday implements Comparable<Birthday> {
 
     private Date date;
     private String name;
@@ -18,20 +18,21 @@ public class Birthday implements Comparable<Birthday>{
 
     public Birthday(String date, String name, String mailOrPhone) {
         String[] dateFormat = new String[]{"dd.MM.yyyy", "d.M.y", "dd.MM."};
-        for(String format : dateFormat){
+        for (String format : dateFormat) {
             try {
                 this.date = new SimpleDateFormat(format).parse(date);
-                if(format.equals(dateFormat[2])){
+                if (format.equals(dateFormat[2])) {
                     Calendar c = Calendar.getInstance();
                     c.setTime(this.date);
                     c.set(YEAR, 1);
                     this.date = c.getTime();
                 }
                 break;
-            } catch (ParseException e) {}
+            } catch (ParseException e) {
+            }
         }
-        if(this.date == null){
-            Main.LOGGER.warning("Wrong format for " + date + "! ("+name+")");
+        if (this.date == null) {
+            Main.LOGGER.warning("Wrong format for " + date + "! (" + name + ")");
             this.date = new Date();
             this.date.setYear(0);
         }
@@ -39,16 +40,16 @@ public class Birthday implements Comparable<Birthday>{
         this.name = name;
 
         String[] mailPhone;
-        if(mailOrPhone.contains("; ")){
+        if (mailOrPhone.contains("; ")) {
             mailPhone = mailOrPhone.split("; ");
         } else {
             mailPhone = new String[]{mailOrPhone};
         }
 
-        for(String s : mailPhone){
-            if(s.matches("(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$)")){
+        for (String s : mailPhone) {
+            if (s.matches("(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$)")) {
                 mail = s;
-            }else if(s.matches("^[0-9\\/-]+$")){
+            } else if (s.matches("^[0-9\\/-]+$")) {
                 phone = s;
             }
         }
@@ -68,14 +69,14 @@ public class Birthday implements Comparable<Birthday>{
         return date;
     }
 
-    public Calendar getCalendar(){
+    public Calendar getCalendar() {
         return getCalendar(false);
     }
 
-    public Calendar getCalendar(boolean changeYear){
+    public Calendar getCalendar(boolean changeYear) {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);
-        if(changeYear) calendar.set(YEAR, Calendar.getInstance().get(YEAR));
+        if (changeYear) calendar.set(YEAR, Calendar.getInstance().get(YEAR));
         return calendar;
     }
 
@@ -90,6 +91,7 @@ public class Birthday implements Comparable<Birthday>{
     public String getMail() {
         return mail;
     }
+
     public String getMail(boolean notNull) {
         return mail == null && notNull ? "" : mail;
     }
@@ -97,14 +99,16 @@ public class Birthday implements Comparable<Birthday>{
     public String getPhone() {
         return phone;
     }
+
     public String getPhone(boolean notNull) {
         return phone == null && notNull ? "" : phone;
     }
 
-    public int getAge(){
+    public int getAge() {
         return getAge(false);
     }
-    public int getAge(boolean add){
+
+    public int getAge(boolean add) {
         Calendar a = getCalendar(getDate());
         Calendar b = getCalendar(new Date());
         int diff = b.get(YEAR) - a.get(YEAR);
@@ -112,7 +116,7 @@ public class Birthday implements Comparable<Birthday>{
                 (a.get(MONTH) == b.get(MONTH) && a.get(DATE) > b.get(DATE))) {
             diff--;
         }
-        return diff + ((add) ? 1 : 0);//TODO
+        return add ? diff + 1 : diff;//TODO
     }
 
     private Calendar getCalendar(Date date) {
@@ -121,29 +125,29 @@ public class Birthday implements Comparable<Birthday>{
         return cal;
     }
 
-    public String getListText(){
+    public String getListText() {
         return getListText(this.getCalendar(true).getTime().getTime() > System.currentTimeMillis());
     }
 
-    public String getListText(boolean addYear){
+    public String getListText(boolean addYear) {
         String contact = "";
-        if(this.getMail() != null) {
+        if (this.getMail() != null) {
             contact += "✉";
         }
-        if(this.getPhone() != null) {
+        if (this.getPhone() != null) {
             contact += "✆";
         }
-        if(!contact.isEmpty())
-            contact = " ("+contact+")";
+        if (!contact.isEmpty())
+            contact = " (" + contact + ")";
 
-        if(getCalendar().get(YEAR) == 1){
+        if (getCalendar().get(YEAR) == 1) {
             final SimpleDateFormat sdf = new SimpleDateFormat(PropertiesUtils.getInstance().getProperty(PropertiesUtils.PropertyType.MESSAGE, "gui.list.no.year.date.format"));
             final String format = PropertiesUtils.getInstance().getProperty(PropertiesUtils.PropertyType.MESSAGE, "gui.list.no.year.format");
-            return String.format(format, sdf.format(getDate()), getName())+contact;
+            return String.format(format, sdf.format(getDate()), getName()) + contact;
         } else {
             final SimpleDateFormat sdf = new SimpleDateFormat(PropertiesUtils.getInstance().getProperty(PropertiesUtils.PropertyType.MESSAGE, "gui.list.date.format"));
             final String format = PropertiesUtils.getInstance().getProperty(PropertiesUtils.PropertyType.MESSAGE, "gui.list.format");
-            return String.format(format, sdf.format(getDate()), getAge(addYear), getName())+contact;
+            return String.format(format, sdf.format(getDate()), getAge(addYear), getName()) + contact;
         }
     }
 
@@ -159,10 +163,18 @@ public class Birthday implements Comparable<Birthday>{
 
     @Override
     public int compareTo(Birthday o) {
-        if(this.getCalendar(true).getTime().getTime() != o.getCalendar(true).getTime().getTime())
-            return this.getCalendar(true).after(o.getCalendar(true)) ? 1 : -1;
-        if(this.getCalendar().getTime().getTime() != o.getCalendar().getTime().getTime())
-            return this.getCalendar().after(o.getCalendar()) ? 1 : -1;
-        return getName().compareTo(o.getName());
+
+        final int comparedDates = getCalendar(true).compareTo(o.getCalendar(true));
+        return comparedDates == 0 ? getName().compareToIgnoreCase(o.getName()) : comparedDates;
+
+
+        // bd dd.mm.current jahr
+//        if(this.getCalendar(true).getTime().getTime() != o.getCalendar(true).getTime().getTime())
+//            return this.getCalendar(true).after(o.getCalendar(true)) ? 1 : -1;
+//
+//        if(this.getCalendar().getTime().getTime() != o.getCalendar().getTime().getTime())
+//            return this.getCalendar().after(o.getCalendar()) ? 1 : -1;
+
+//        return getName().compareTo(o.getName());
     }
 }
