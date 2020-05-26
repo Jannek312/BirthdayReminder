@@ -7,6 +7,10 @@
     <property name="dist.dir" location="dist" />
     <property name="docs.dir" location="docs" />
 
+    <path id="classpath">
+        <fileset dir="libs" erroronmissingdir="false" />
+    </path>
+
     <!-- Deletes the existing build, docs and dist directory-->
     <target name="clean">
         <delete dir="${build.dir}" />
