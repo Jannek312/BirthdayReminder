@@ -1,6 +1,6 @@
 package de.mcelements.birthday.reminder.util;
 
-import de.mcelements.birthday.reminder.Main;
+import de.mcelements.birthday.reminder.BirthdayReminder;
 
 import java.io.*;
 import java.util.Arrays;
@@ -10,7 +10,7 @@ import java.util.logging.Logger;
 
 public class PropertiesUtils {
 
-    private static final Logger LOGGER = Main.LOGGER;
+    private static final Logger LOGGER = BirthdayReminder.LOGGER;
 
     private static PropertiesUtils instance;
 

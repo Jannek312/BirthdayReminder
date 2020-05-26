@@ -1,26 +1,13 @@
 package de.mcelements.birthday.reminder.gui.main;
 
-import de.mcelements.birthday.reminder.Main;
-import de.mcelements.birthday.reminder.util.Birthday;
-import de.mcelements.birthday.reminder.util.BirthdayList;
-import de.mcelements.birthday.reminder.util.PropertiesUtils;
-import de.mcelements.birthday.reminder.util.Utils;
-import javafx.beans.binding.StringBinding;
-import javafx.event.ActionEvent;
+import de.mcelements.birthday.reminder.BirthdayReminder;
+import de.mcelements.birthday.reminder.util.*;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.TextField;
 import javafx.scene.control.*;
 import javafx.scene.text.Font;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import java.awt.*;
-import java.awt.datatransfer.StringSelection;
-import java.io.IOException;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -29,7 +16,7 @@ import java.util.logging.Logger;
 public class MainController {
     BirthdayList birthdayList = null;
 
-    Logger logger = Main.LOGGER;
+    private final Logger logger = BirthdayReminder.LOGGER;
 
     public MainController() {
         System.out.println("loading MainController...");
@@ -73,7 +60,7 @@ public class MainController {
         String path = PropertiesUtils.getInstance().getProperty(PropertiesUtils.PropertyType.SETTINGS, "path.last", false);
         if (path == null || path.isEmpty()) {
             try {
-                path = Main.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath();
+                path = BirthdayReminder.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath();
             } catch (URISyntaxException e) {
             }
         }
@@ -117,9 +104,7 @@ public class MainController {
         boolean ignoreLimit = checkBoxIgnoreLimit.isSelected();
         int limitPast = !ignoreLimit ? Integer.parseInt(PropertiesUtils.getInstance().getProperty(PropertiesUtils.PropertyType.SETTINGS, "limit.past")) : -1;
         int limitFuture = !ignoreLimit ? Integer.parseInt(PropertiesUtils.getInstance().getProperty(PropertiesUtils.PropertyType.SETTINGS, "limit.future")) : -1;
-        labelPast.setText(PropertiesUtils.getInstance().getProperty(PropertiesUtils.PropertyType.MESSAGE, "gui.label.past", labelSDF.format(getDate(limitPast * -1))));
-        labelToday.setText(PropertiesUtils.getInstance().getProperty(PropertiesUtils.PropertyType.MESSAGE, "gui.label.today", labelSDF.format(new Date())));
-        labelFuture.setText(PropertiesUtils.getInstance().getProperty(PropertiesUtils.PropertyType.MESSAGE, "gui.label.future", labelSDF.format(getDate(limitFuture))));
+        setListTitles(labelSDF, limitPast, limitFuture);
 
         textFieldSearch.setPromptText(PropertiesUtils.getInstance().getProperty(type, "gui.text.search"));
 
@@ -129,6 +114,16 @@ public class MainController {
         buttonLoadFile.setText(PropertiesUtils.getInstance().getProperty(type, "gui.button.load.file"));
 
         updateListView();
+    }
+
+    private void setListTitles(final SimpleDateFormat simpleDateFormat, final int limitPast, final int limitFuture) {
+        labelPast.setText(PropertiesUtils.getInstance().getProperty(PropertiesUtils.PropertyType.MESSAGE, "gui.label.past" + (limitPast == -1 ? ".no" : "") + ".limit",
+                simpleDateFormat.format(getDate(limitPast * -1))));
+
+        labelToday.setText(PropertiesUtils.getInstance().getProperty(PropertiesUtils.PropertyType.MESSAGE, "gui.label.today", simpleDateFormat.format(new Date())));
+
+        labelFuture.setText(PropertiesUtils.getInstance().getProperty(PropertiesUtils.PropertyType.MESSAGE, "gui.label.future" + (limitFuture == -1 ? ".no" : "") + ".limit",
+                simpleDateFormat.format(getDate(limitFuture))));
     }
 
     public void updateList(BirthdayList birthdayList) {
@@ -143,26 +138,14 @@ public class MainController {
 
     public void updateListView(final String filter) {
         boolean ignoreLimit = checkBoxIgnoreLimit.isSelected();
-        int limitPast = !ignoreLimit ? Integer.parseInt(PropertiesUtils.getInstance().getProperty(PropertiesUtils.PropertyType.SETTINGS, "limit.past")) : -1;
-        int limitFuture = !ignoreLimit ? Integer.parseInt(PropertiesUtils.getInstance().getProperty(PropertiesUtils.PropertyType.SETTINGS, "limit.future")) : -1;
+        int limitPast = ignoreLimit ? -1 : Integer.parseInt(PropertiesUtils.getInstance().getProperty(PropertiesUtils.PropertyType.SETTINGS, "limit.past"));
+        int limitFuture = ignoreLimit ? -1 : Integer.parseInt(PropertiesUtils.getInstance().getProperty(PropertiesUtils.PropertyType.SETTINGS, "limit.future"));
 
         clearListView();
 
-
-        for (Birthday birthday : birthdayList.findBirthdays(BirthdayList.BirthdayType.PAST, filter, limitPast)) {
-            listViewPast.getItems().add(birthday);
-        }
-
-
-        for (Birthday birthday : birthdayList.findBirthdays(BirthdayList.BirthdayType.TODAY, filter)) {
-            listViewToday.getItems().add(birthday);
-        }
-
-
-        for (Birthday birthday : birthdayList.findBirthdays(BirthdayList.BirthdayType.FUTURE, filter, limitFuture)) {
-            listViewFuture.getItems().add(birthday);
-        }
-
+        listViewPast.getItems().addAll(birthdayList.findBirthdays(BirthdayList.BirthdayType.PAST, filter, limitPast));
+        listViewToday.getItems().addAll(birthdayList.findBirthdays(BirthdayList.BirthdayType.TODAY, filter));
+        listViewFuture.getItems().addAll(birthdayList.findBirthdays(BirthdayList.BirthdayType.FUTURE, filter, limitFuture));
 
         setContextMenuNew(listViewPast);
         setContextMenuNew(listViewToday);
@@ -170,11 +153,7 @@ public class MainController {
 
 
         SimpleDateFormat labelSDF = new SimpleDateFormat(PropertiesUtils.getInstance().getProperty(PropertiesUtils.PropertyType.MESSAGE, "gui.label.date.format"));
-        labelPast.setText(PropertiesUtils.getInstance().getProperty(PropertiesUtils.PropertyType.MESSAGE, "gui.label.past", labelSDF.format(getDate(limitPast * -1))));
-        labelToday.setText(PropertiesUtils.getInstance().getProperty(PropertiesUtils.PropertyType.MESSAGE, "gui.label.today", labelSDF.format(new Date())));
-        labelFuture.setText(PropertiesUtils.getInstance().getProperty(PropertiesUtils.PropertyType.MESSAGE, "gui.label.future", labelSDF.format(getDate(limitFuture))));
-
-
+        setListTitles(labelSDF, limitPast, limitFuture);
     }
 
     private void clearListView() {
@@ -193,80 +172,19 @@ public class MainController {
         int i = 12;
         try {
             i = Integer.parseInt(size);
-        } catch (Exception ex) {
+        } catch (Exception ignored) {
         }
         final int fontSize = i;
 
-        Font font1;
+        Font font;
         try {
-            font1 = new Font(fontName, fontSize);
+            font = new Font(fontName, fontSize);
         } catch (Exception e) {
-            font1 = new Font(fontSize);
+            font = new Font(fontSize);
         }
-        if (font1 == null)
-            font1 = new Font(12);
 
-        final Font font = font1;
-
-        listView.setCellFactory(lv -> {
-            ListCell<Birthday> cell = new ListCell<>();
-            ContextMenu contextMenu = new ContextMenu();
-            cell.setFont(font);
-
-            MenuItem mail = new MenuItem(PropertiesUtils.getInstance().getProperty(PropertiesUtils.PropertyType.MESSAGE, "gui.list.mail"));
-            mail.setOnAction((ActionEvent event) -> {
-                Birthday birthday = cell.getItem();
-                if (birthday.getMail() == null || birthday.getMail().isEmpty()) {
-                    JOptionPane.showMessageDialog(null, PropertiesUtils.getInstance().getProperty(PropertiesUtils.PropertyType.MESSAGE, "gui.list.mail.not.found"));
-                } else {
-                    Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(birthday.getMail()), null);
-                    URI mailURI = URI.create(PropertiesUtils.getInstance().getProperty(PropertiesUtils.PropertyType.MESSAGE, "strings.format.mail", birthday.getMail(true)));
-                    try {
-                        Desktop.getDesktop().mail(mailURI);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-            });
-
-            MenuItem phone = new MenuItem(PropertiesUtils.getInstance().getProperty(PropertiesUtils.PropertyType.MESSAGE, "gui.list.phone"));
-            phone.setOnAction((ActionEvent event) -> {
-                Birthday birthday = cell.getItem();
-                if (birthday.getPhone() == null) {
-                    JOptionPane.showMessageDialog(null, PropertiesUtils.getInstance().getProperty(PropertiesUtils.PropertyType.MESSAGE, "gui.list.phone.not.found"));
-                } else {
-                    Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(birthday.getPhone()), null);
-                    JOptionPane.showMessageDialog(null, birthday.getPhone(true));
-                }
-            });
-
-            contextMenu.getItems().addAll(mail, phone);
-
-            StringBinding stringBinding = new StringBinding() {
-                {
-                    super.bind(cell.itemProperty().asString());
-                }
-
-                @Override
-                protected String computeValue() {
-                    if (cell.itemProperty().getValue() == null) {
-                        return "";
-                    }
-                    return cell.itemProperty().getValue().getListText();
-                }
-            };
-
-            cell.textProperty().bind(stringBinding);
-            cell.emptyProperty().addListener((obs, wasEmpty, isNowEmpty) -> {
-                if (isNowEmpty) {
-                    cell.setVisible(false);
-                    cell.setContextMenu(null);
-                } else {
-                    cell.setContextMenu(contextMenu);
-                }
-            });
-            return cell;
-        });
+        final Font finalFont = font;
+        listView.setCellFactory(studentListView -> new BirthdayListViewCell(finalFont));
     }
 
 }

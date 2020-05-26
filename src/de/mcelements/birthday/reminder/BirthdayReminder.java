@@ -9,9 +9,9 @@ import javafx.application.Application;
 
 import java.util.logging.Logger;
 
-public class Main {
+public class BirthdayReminder {
 
-    public static final Logger LOGGER = Logger.getLogger(Main.class.getName());
+    public static final Logger LOGGER = Logger.getLogger(BirthdayReminder.class.getName());
     public static MainController mainController;
     public static SettingsController settingsController;
 

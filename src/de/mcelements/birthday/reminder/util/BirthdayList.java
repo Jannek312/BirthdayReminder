@@ -36,29 +36,57 @@ public class BirthdayList {
         switch (type) {
             case PAST:
                 today.set(Calendar.DAY_OF_YEAR, today.get(Calendar.DAY_OF_YEAR) - 1);
-                array = birthdays.stream().filter(birthday -> birthday.getCalendar(true).before(today) &&
 
-                        (!(limit != -1 && birthday.getCalendar(true).getTime().getTime() + (1000 * 60 * 60 * 24 * limit) <= System.currentTimeMillis()) || (limit == -1)) &&
-                        (filter.isEmpty() || !filter.isEmpty() && birthday.getName(true).contains(filter) ||
-                                birthday.getDate().toString().contains(filter) || birthday.getMail(true).contains(filter) ||
-                                birthday.getPhone(true).contains(filter))).sorted(Collections.reverseOrder()).toArray(s -> new Birthday[s]);
+                array = birthdays.stream().filter(birthday -> birthday.getCalendar(true).before(today)
+                        //limit -1 or in limit
+                        && (limit == -1 || birthday.getCalendar(true).getTime().getTime() >= today.getTime().getTime() - (1000 * 60 * 60 * 24 * limit))
+
+                        //filter empty or match
+                        && filter(birthday, filter)
+                ).sorted(Collections.reverseOrder()).toArray(Birthday[]::new);
+
                 break;
             case TODAY:
-                array = birthdays.stream().filter(birthday -> birthday.getCalendar(true).get(Calendar.DAY_OF_YEAR) == today.get(Calendar.DAY_OF_YEAR) &&
-                        (filter.isEmpty() || !filter.isEmpty() && birthday.getName(true).contains(filter) ||
-                                birthday.getDate().toString().contains(filter) || birthday.getMail(true).contains(filter) ||
-                                birthday.getPhone(true).contains(filter))).sorted().toArray(s -> new Birthday[s]);
+                array = birthdays.stream().filter(birthday -> birthday.getCalendar(true).get(Calendar.DAY_OF_YEAR) == today.get(Calendar.DAY_OF_YEAR)
+
+                        //filter empty or match
+                        && filter(birthday, filter)
+                ).sorted().toArray(Birthday[]::new);
+
                 break;
             case FUTURE:
-                array = birthdays.stream().filter(birthday -> birthday.getCalendar(true).after(today) &&
-                        (!(limit != -1 && birthday.getCalendar(true).getTime().getTime() - (1000 * 60 * 60 * 24 * limit) >= System.currentTimeMillis()) || (limit == -1)) &&
-                        (filter.isEmpty() || !filter.isEmpty() && birthday.getName(true).contains(filter) ||
-                                birthday.getDate().toString().contains(filter) || birthday.getMail(true).contains(filter) ||
-                                birthday.getPhone(true).contains(filter))).sorted().toArray(s -> new Birthday[s]);
+                array = birthdays.stream().filter(birthday -> birthday.getCalendar(true).after(today)
+                        //limit -1 or in limit
+                        && (limit == -1 || birthday.getCalendar(true).getTime().getTime() <= today.getTime().getTime() + (1000 * 60 * 60 * 24 * limit))
+
+                        //filter empty or match
+                        && filter(birthday, filter)
+                ).sorted().toArray(Birthday[]::new);
                 break;
         }
+
+        System.out.println();
+        System.out.println();
+        System.out.println("Sorted arrays:");
+        System.out.println(type.name() + ":");
+        for (Birthday birthday : array) {
+            System.out.println(birthday);
+        }
+        System.out.println();
+        System.out.println();
         return array;
     }
+
+    private boolean filter(final Birthday birthday, final String filter) {
+        //filter empty or match
+        return filter.trim().isEmpty() || (
+                birthday.getName(true).contains(filter.toLowerCase())
+                        || birthday.getDate().toString().contains(filter)
+                        || birthday.getMail(true).toLowerCase().contains(filter.toLowerCase())
+                        || birthday.getPhone(true).toLowerCase().contains(filter.toLowerCase())
+                        || birthday.getListText().toLowerCase().contains(filter.toLowerCase()));
+    }
+
 
     public enum BirthdayType {
         PAST(-10),
