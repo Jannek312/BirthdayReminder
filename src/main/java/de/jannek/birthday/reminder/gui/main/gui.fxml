@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<BorderPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="200.0" minWidth="0.0"
+            prefHeight="720.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/8.0.121"
+            xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.jannek.birthday.reminder.gui.main.MainController">
+    <center>
+        <GridPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="50.0" minWidth="0.0"
+                  BorderPane.alignment="CENTER">
+            <columnConstraints>
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="1.7976931348623157E308" minWidth="0.0" percentWidth="1"
+                                   prefWidth="327.0"/>
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="1.7976931348623157E308" minWidth="0.0"
+                                   prefWidth="329.0"/>
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="1.7976931348623157E308" minWidth="0.0" percentWidth="1"
+                                   prefWidth="327.0"/>
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="1.7976931348623157E308" minWidth="0.0"
+                                   prefWidth="327.0"/>
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="1.7976931348623157E308" minWidth="0.0" percentWidth="1"
+                                   prefWidth="327.0"/>
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="1.7976931348623157E308" minWidth="0.0"
+                                   prefWidth="327.0"/>
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="1.7976931348623157E308" minWidth="0.0" percentWidth="1"
+                                   prefWidth="327.0"/>
+            </columnConstraints>
+            <rowConstraints>
+                <RowConstraints maxHeight="20.0" minHeight="20.0" prefHeight="20.0" vgrow="SOMETIMES"/>
+                <RowConstraints maxHeight="1.7976931348623157E308" minHeight="30.0" prefHeight="420.0"
+                                vgrow="SOMETIMES"/>
+            </rowConstraints>
+            <ListView fx:id="listViewPast" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1"
+                      GridPane.rowIndex="1"/>
+            <ListView fx:id="listViewToday" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="3"
+                      GridPane.rowIndex="1"/>
+            <ListView fx:id="listViewFuture" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="5"
+                      GridPane.rowIndex="1"/>
+            <Label fx:id="labelPast" text="Label1" GridPane.columnIndex="1"/>
+            <Label fx:id="labelToday" text="Label2" GridPane.columnIndex="3"/>
+            <Label fx:id="labelFuture" text="Label3" GridPane.columnIndex="5"/>
+        </GridPane>
+    </center>
+    <bottom>
+        <GridPane BorderPane.alignment="CENTER_RIGHT">
+            <columnConstraints>
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="0.0" percentWidth="1" prefWidth="100.0"/>
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="0.0" percentWidth="70" prefWidth="100.0"/>
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="0.0" percentWidth="1" prefWidth="100.0"/>
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="0.0" percentWidth="10" prefWidth="100.0"/>
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="0.0" percentWidth="1" prefWidth="100.0"/>
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="0.0" percentWidth="10" prefWidth="100.0"/>
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="0.0" percentWidth="1" prefWidth="100.0"/>
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="0.0" percentWidth="10" prefWidth="100.0"/>
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="0.0" percentWidth="1" prefWidth="100.0"/>
+            </columnConstraints>
+            <rowConstraints>
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+            </rowConstraints>
+            <TextField fx:id="textFieldSearch" onKeyReleased="#textAreaTyped" onAction="#textAreaTyped"
+                       prefHeight="25.0" prefWidth="340.0" GridPane.columnIndex="1"/>
+            <CheckBox fx:id="checkBoxIgnoreLimit" onAction="#textAreaTyped" mnemonicParsing="false" prefHeight="17.0"
+                      prefWidth="316.0" maxWidth="Infinity"
+                      text="CheckBox" textAlignment="CENTER" GridPane.columnIndex="3"/>
+            <Button fx:id="buttonSettings" onAction="#buttonSettings" mnemonicParsing="false" text="Settings"
+                    maxWidth="Infinity" GridPane.columnIndex="5"/>
+            <Button fx:id="buttonLoadFile" onAction="#buttonLoadFile" mnemonicParsing="false" text="Load File"
+                    maxWidth="Infinity" GridPane.columnIndex="7"/>
+        </GridPane>
+    </bottom>
+</BorderPane>
