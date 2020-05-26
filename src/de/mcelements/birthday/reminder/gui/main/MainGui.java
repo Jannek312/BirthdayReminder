@@ -1,6 +1,6 @@
 package de.mcelements.birthday.reminder.gui.main;
 
-import de.mcelements.birthday.reminder.Main;
+import de.mcelements.birthday.reminder.BirthdayReminder;
 import de.mcelements.birthday.reminder.util.PropertiesUtils;
 import de.mcelements.birthday.reminder.util.Utils;
 import javafx.application.Application;
@@ -25,7 +25,7 @@ public class MainGui extends Application {
         stage.setMinWidth(600.0);
 
         stage.setScene(scene);
-        stage.getIcons().add(new Image(Main.class.getResourceAsStream("/favicon.png")));
+        stage.getIcons().add(new Image(BirthdayReminder.class.getResourceAsStream("/favicon.png")));
 
         /*
         stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
@@ -38,7 +38,7 @@ public class MainGui extends Application {
 
         stage.show();
 
-        Main.mainController = loader.getController();
+        BirthdayReminder.mainController = loader.getController();
         Utils.updateLanguage(PropertiesUtils.getInstance().getProperty(PropertiesUtils.PropertyType.SETTINGS, "language"));
 
         if (!PropertiesUtils.getInstance().containsProperty(PropertiesUtils.PropertyType.SETTINGS, "path.last")) {

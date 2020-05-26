@@ -1,6 +1,6 @@
 package de.mcelements.birthday.reminder.util;
 
-import de.mcelements.birthday.reminder.Main;
+import de.mcelements.birthday.reminder.BirthdayReminder;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -32,7 +32,7 @@ public class Birthday implements Comparable<Birthday> {
             }
         }
         if (this.date == null) {
-            Main.LOGGER.warning("Wrong format for " + date + "! (" + name + ")");
+            BirthdayReminder.LOGGER.warning("Wrong format for " + date + "! (" + name + ")");
             this.date = new Date();
             this.date.setYear(0);
         }
@@ -84,8 +84,8 @@ public class Birthday implements Comparable<Birthday> {
         return name;
     }
 
-    public String getName(boolean toLowwerCase) {
-        return toLowwerCase ? getName().toLowerCase() : getName();
+    public String getName(boolean toLowerCase) {
+        return toLowerCase ? getName().toLowerCase() : getName();
     }
 
     public String getMail() {
@@ -93,7 +93,7 @@ public class Birthday implements Comparable<Birthday> {
     }
 
     public String getMail(boolean notNull) {
-        return mail == null && notNull ? "" : mail;
+        return notNull ? mail == null ? "" : mail : mail;
     }
 
     public String getPhone() {
@@ -151,14 +151,15 @@ public class Birthday implements Comparable<Birthday> {
         }
     }
 
+
     @Override
     public String toString() {
-        /*
-        return "Name: " + getName() + ", Date: " + new SimpleDateFormat("dd.MM.yyyy").format(getDate()) + ", " +
-                (!(getMail() == null || getMail().equals("")) ? "Mail: " + getMail() : "") +
-                (!(getPhone() == null || getPhone().equals("")) ? " Phone: " + getPhone() : "");
-        */
-        return getListText();
+        return "Birthday{" +
+                "date=" + date +
+                ", name='" + name + '\'' +
+                ", mail='" + mail + '\'' +
+                ", phone='" + phone + '\'' +
+                '}';
     }
 
     @Override

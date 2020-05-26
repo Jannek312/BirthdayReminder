@@ -1,6 +1,6 @@
 package de.mcelements.birthday.reminder.util;
 
-import de.mcelements.birthday.reminder.Main;
+import de.mcelements.birthday.reminder.BirthdayReminder;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -20,10 +20,10 @@ import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
 public class Utils {
-    static Logger logger = Main.LOGGER;
+    static Logger logger = BirthdayReminder.LOGGER;
 
     public static void loadLogger() {
-        Main.LOGGER.setUseParentHandlers(false);
+        BirthdayReminder.LOGGER.setUseParentHandlers(false);
         ConsoleHandler handler = new ConsoleHandler();
         handler.setFormatter(new Formatter() {
             @Override
@@ -36,7 +36,7 @@ public class Utils {
             }
         });
 
-        Main.LOGGER.addHandler(handler);
+        BirthdayReminder.LOGGER.addHandler(handler);
     }
 
     public static void loadFile(String fileName) throws Exception {
@@ -78,7 +78,7 @@ public class Utils {
         });
 
         workbook.close();
-        Main.mainController.updateList(birthdayList);
+        BirthdayReminder.mainController.updateList(birthdayList);
     }
 
     public static class FXML {
@@ -87,7 +87,7 @@ public class Utils {
             FXMLLoader loader;
             Parent parent;
             try {
-                loader = new FXMLLoader(Main.class.getResource(filename));
+                loader = new FXMLLoader(BirthdayReminder.class.getResource(filename));
                 parent = loader.load();
             } catch (Exception e) {
                 e.printStackTrace();
@@ -100,7 +100,7 @@ public class Utils {
             stage.show();
 
             if (filename.contains("settingsGui.fxml"))
-                Main.settingsController = loader.getController();
+                BirthdayReminder.settingsController = loader.getController();
         }
     }
 
@@ -125,9 +125,9 @@ public class Utils {
 
         System.out.println(type.toString());
 
-        Main.mainController.updateLanguage();
-        if (Main.settingsController != null)
-            Main.settingsController.updateLanguage();
+        BirthdayReminder.mainController.updateLanguage();
+        if (BirthdayReminder.settingsController != null)
+            BirthdayReminder.settingsController.updateLanguage();
     }
 
 
