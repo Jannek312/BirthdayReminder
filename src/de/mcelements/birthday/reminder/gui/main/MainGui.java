@@ -15,7 +15,7 @@ public class MainGui extends Application {
     public static Stage stage;
 
     @Override
-    public void start(Stage stage) throws Exception{
+    public void start(Stage stage) throws Exception {
         this.stage = stage;
         FXMLLoader loader = new FXMLLoader(getClass().getResource("gui.fxml"));
         Parent root = loader.load();
@@ -41,7 +41,7 @@ public class MainGui extends Application {
         Main.mainController = loader.getController();
         Utils.updateLanguage(PropertiesUtils.getInstance().getProperty(PropertiesUtils.PropertyType.SETTINGS, "language"));
 
-        if(!PropertiesUtils.getInstance().containsProperty(PropertiesUtils.PropertyType.SETTINGS, "path.last")){
+        if (!PropertiesUtils.getInstance().containsProperty(PropertiesUtils.PropertyType.SETTINGS, "path.last")) {
             return;
         }
 

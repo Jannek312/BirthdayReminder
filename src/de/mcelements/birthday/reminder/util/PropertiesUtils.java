@@ -14,8 +14,8 @@ public class PropertiesUtils {
 
     private static PropertiesUtils instance;
 
-    public static PropertiesUtils getInstance(){
-        if(instance == null)
+    public static PropertiesUtils getInstance() {
+        if (instance == null)
             instance = new PropertiesUtils();
         return instance;
     }
@@ -23,19 +23,21 @@ public class PropertiesUtils {
     private PropertiesUtils() {
         for (PropertyType type : PropertyType.values()) {
             LOGGER.info("loading " + type.name() + " (" + type.getPath() + ")");
-            if(type.isInternal() == null) continue;
-            if(type.isInternal()){
-                try(InputStream is = PropertiesUtils.class.getResourceAsStream(type.getPath())) {
+            if (type.isInternal() == null) continue;
+            if (type.isInternal()) {
+                try (InputStream is = PropertiesUtils.class.getResourceAsStream(type.getPath())) {
                     type.getProperties().load(new InputStreamReader(is, "UTF-8"));
-                }catch (Exception e) {
+                } catch (Exception e) {
                     LOGGER.warning("an error occurred while trying to load " + type.getPath());
                     e.printStackTrace();
                     System.exit(1);
                 }
-            }else{
+            } else {
                 File file = new File(type.getPath());
-                if(!file.exists()){
-                    try {file.createNewFile();} catch (IOException e) {
+                if (!file.exists()) {
+                    try {
+                        file.createNewFile();
+                    } catch (IOException e) {
                         LOGGER.warning("an error occurred while trying to load " + type.getPath());
                         e.printStackTrace();
                         System.exit(1);
@@ -50,7 +52,7 @@ public class PropertiesUtils {
                     System.exit(1);
                 }
 
-                if(type.getCopy() != null){
+                if (type.getCopy() != null) {
                     LOGGER.info("copying properties from " + type.getCopy().getPath() + " to " + type.getPath() + "...");
                     type.getCopy().getProperties().forEach((key, value) -> {
                         System.out.println(key + ": " + value);
@@ -63,37 +65,37 @@ public class PropertiesUtils {
         }
     }
 
-    public boolean containsProperty(PropertyType type, String key){
+    public boolean containsProperty(PropertyType type, String key) {
         return type.getProperties().containsKey(key);
     }
 
-    public String getProperty(PropertyType propertyType, String key, String... args){
+    public String getProperty(PropertyType propertyType, String key, String... args) {
         return getPropertyOrDefault(propertyType, key, "KEY", args);
     }
 
-    public String getProperty(PropertyType propertyType, String key, boolean returnNull, String... args){
+    public String getProperty(PropertyType propertyType, String key, boolean returnNull, String... args) {
         String s = (returnNull) ? null : "KEY";
         return getPropertyOrDefault(propertyType, key, s, args);
     }
 
-    public String getPropertyOrDefault(PropertyType propertyType, String key, String defaultValue, String... args){
+    public String getPropertyOrDefault(PropertyType propertyType, String key, String defaultValue, String... args) {
         Properties properties = propertyType.getProperties();
-        if(!properties.containsKey(key)){
+        if (!properties.containsKey(key)) {
             LOGGER.warning("key " + key + " not found in " + propertyType.getPath());
             return defaultValue.equals("KEY") ? key : defaultValue;
         }
         String value = properties.getProperty(key);
-        if(args.length != 0)
+        if (args.length != 0)
             try {
                 value = String.format(value, args);
-            }catch (Exception ex){
+            } catch (Exception ex) {
                 LOGGER.warning("an error occurred while trying to format \n" + value + "\n with " + Arrays.toString(args) + " (key: " + key + ", file: " + propertyType.getPath() + ")");
                 ex.printStackTrace();
             }
         return value;
     }
 
-    public void setProperty(PropertyType propertyType, String key, String value){
+    public void setProperty(PropertyType propertyType, String key, String value) {
         propertyType.getProperties().setProperty(key, value);
     }
 
@@ -112,7 +114,7 @@ public class PropertiesUtils {
         private final Boolean internal;
         private final PropertyType copy;
 
-        PropertyType(String key, String displayName){
+        PropertyType(String key, String displayName) {
             this.key = key;
             this.displayName = displayName;
             this.path = null;
@@ -136,28 +138,49 @@ public class PropertiesUtils {
             this.copy = copy;
         }
 
-        public String getKey(){return key;}
-        public String getDisplayName() {return displayName;}
-        private Properties getProperties() {return properties;}
-        private String getPath() {return path;}
-        private Boolean isInternal() {return internal;}
-        private PropertyType getCopy() {return copy;}
-
-        public void copy(PropertyType type){
-            properties = type.getProperties();
-            LOGGER.info("copying properties from " + type + " to " + this + " ("+properties.keySet().size()+")");
+        public String getKey() {
+            return key;
         }
 
-        private void save(){
-            if(isInternal()) return;
+        public String getDisplayName() {
+            return displayName;
+        }
+
+        private Properties getProperties() {
+            return properties;
+        }
+
+        private String getPath() {
+            return path;
+        }
+
+        private Boolean isInternal() {
+            return internal;
+        }
+
+        private PropertyType getCopy() {
+            return copy;
+        }
+
+        public void copy(PropertyType type) {
+            properties = type.getProperties();
+            LOGGER.info("copying properties from " + type + " to " + this + " (" + properties.keySet().size() + ")");
+        }
+
+        private void save() {
+            if (isInternal()) return;
             LOGGER.info("saving properties to " + getPath() + "...");
             File file = new File(getPath());
-            if(!file.exists())
-                try {file.createNewFile();} catch (IOException e) {e.printStackTrace();}
+            if (!file.exists())
+                try {
+                    file.createNewFile();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
 
-            try(OutputStream os = new FileOutputStream(file)){
+            try (OutputStream os = new FileOutputStream(file)) {
                 getProperties().store(os, new Date().toString());
-            }catch (Exception ex){
+            } catch (Exception ex) {
                 LOGGER.warning("An error occurred while trying to save " + getPath());
                 ex.printStackTrace();
             }

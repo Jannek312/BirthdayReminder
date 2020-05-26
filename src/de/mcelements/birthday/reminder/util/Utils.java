@@ -22,7 +22,7 @@ import java.util.logging.Logger;
 public class Utils {
     static Logger logger = Main.LOGGER;
 
-    public static void loadLogger(){
+    public static void loadLogger() {
         Main.LOGGER.setUseParentHandlers(false);
         ConsoleHandler handler = new ConsoleHandler();
         handler.setFormatter(new Formatter() {
@@ -39,20 +39,20 @@ public class Utils {
         Main.LOGGER.addHandler(handler);
     }
 
-    public static void loadFile(String fileName) throws Exception{
-        if(fileName == null || fileName.isEmpty()){
+    public static void loadFile(String fileName) throws Exception {
+        if (fileName == null || fileName.isEmpty()) {
             logger.warning("loadFile with empty or null file name");
             return;
         }
         try {
             loadFile(new File(fileName));
-        }catch (FileNotFoundException ex){
+        } catch (FileNotFoundException ex) {
             ex.printStackTrace();
         }
     }
 
-    public static void loadFile(File file) throws Exception{
-        if(!file.exists()){
+    public static void loadFile(File file) throws Exception {
+        if (!file.exists()) {
             throw new FileNotFoundException(file.getName());
         }
         PropertiesUtils.getInstance().setProperty(PropertiesUtils.PropertyType.SETTINGS, "path.last", file.getPath());
@@ -69,7 +69,7 @@ public class Utils {
                     date,
                     name,
                     dataFormatter.formatCellValue(row.getCell(2)));
-            if(date != null && !date.isEmpty() && name != null && !name.isEmpty()){
+            if (date != null && !date.isEmpty() && name != null && !name.isEmpty()) {
                 birthdayList.add(birthday);
                 System.out.println("ADD: " + birthday.toString());
             } else {
@@ -81,8 +81,8 @@ public class Utils {
         Main.mainController.updateList(birthdayList);
     }
 
-    public static class FXML{
-        public FXML(final String filename){
+    public static class FXML {
+        public FXML(final String filename) {
             Stage stage = new Stage();
             FXMLLoader loader;
             Parent parent;
@@ -99,21 +99,21 @@ public class Utils {
             stage.initModality(Modality.APPLICATION_MODAL);
             stage.show();
 
-            if(filename.contains("settingsGui.fxml"))
+            if (filename.contains("settingsGui.fxml"))
                 Main.settingsController = loader.getController();
         }
     }
 
-    public static void updateLanguage(final String language){
+    public static void updateLanguage(final String language) {
         PropertiesUtils.PropertyType lang = null;
         for (PropertiesUtils.PropertyType type : PropertiesUtils.PropertyType.values()) {
-            if(type.name().equals(language.toUpperCase()) || type.name().equals("MESSAGE_"+language.toUpperCase()) ||
-                    type.getKey().equals(language) || type.getDisplayName().equals(language)){
+            if (type.name().equals(language.toUpperCase()) || type.name().equals("MESSAGE_" + language.toUpperCase()) ||
+                    type.getKey().equals(language) || type.getDisplayName().equals(language)) {
                 lang = type;
                 System.out.println("set to " + type.name());
             }
         }
-        if(lang == null){
+        if (lang == null) {
             logger.warning("PropertyType " + language + " not found!");
             return;
         }
@@ -126,14 +126,9 @@ public class Utils {
         System.out.println(type.toString());
 
         Main.mainController.updateLanguage();
-        if(Main.settingsController != null)
+        if (Main.settingsController != null)
             Main.settingsController.updateLanguage();
     }
-
-
-
-
-
 
 
 }

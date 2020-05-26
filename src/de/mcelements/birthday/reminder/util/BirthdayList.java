@@ -15,7 +15,7 @@ public class BirthdayList {
         }
     }
 
-    public void add(Birthday... birthdays){
+    public void add(Birthday... birthdays) {
         for (Birthday birthday : birthdays) {
             this.birthdays.add(birthday);
         }
@@ -25,7 +25,7 @@ public class BirthdayList {
         return findBirthdays(type, filterTemp, -1);
     }
 
-    public Birthday[] findBirthdays(BirthdayType type, String filterTemp, int limit){ //TODO rewrite!
+    public Birthday[] findBirthdays(BirthdayType type, String filterTemp, int limit) { //TODO rewrite!
         final String filter = (filterTemp != null) ? filterTemp.toLowerCase() : "";
         Calendar today = Calendar.getInstance();
         today.set(Calendar.HOUR_OF_DAY, 0);
@@ -33,12 +33,12 @@ public class BirthdayList {
         today.set(Calendar.SECOND, 0);
         Birthday[] array = null;
         System.out.println("limit: " + limit);
-        switch (type){
+        switch (type) {
             case PAST:
-                today.set(Calendar.DAY_OF_YEAR, today.get(Calendar.DAY_OF_YEAR)-1);
+                today.set(Calendar.DAY_OF_YEAR, today.get(Calendar.DAY_OF_YEAR) - 1);
                 array = birthdays.stream().filter(birthday -> birthday.getCalendar(true).before(today) &&
 
-                        (!(limit != -1 && birthday.getCalendar(true).getTime().getTime()+(1000*60*60*24*limit) <= System.currentTimeMillis()) || (limit == -1)) &&
+                        (!(limit != -1 && birthday.getCalendar(true).getTime().getTime() + (1000 * 60 * 60 * 24 * limit) <= System.currentTimeMillis()) || (limit == -1)) &&
                         (filter.isEmpty() || !filter.isEmpty() && birthday.getName(true).contains(filter) ||
                                 birthday.getDate().toString().contains(filter) || birthday.getMail(true).contains(filter) ||
                                 birthday.getPhone(true).contains(filter))).sorted(Collections.reverseOrder()).toArray(s -> new Birthday[s]);
@@ -51,7 +51,7 @@ public class BirthdayList {
                 break;
             case FUTURE:
                 array = birthdays.stream().filter(birthday -> birthday.getCalendar(true).after(today) &&
-                        (!(limit != -1 && birthday.getCalendar(true).getTime().getTime()-(1000*60*60*24*limit) >= System.currentTimeMillis()) || (limit == -1)) &&
+                        (!(limit != -1 && birthday.getCalendar(true).getTime().getTime() - (1000 * 60 * 60 * 24 * limit) >= System.currentTimeMillis()) || (limit == -1)) &&
                         (filter.isEmpty() || !filter.isEmpty() && birthday.getName(true).contains(filter) ||
                                 birthday.getDate().toString().contains(filter) || birthday.getMail(true).contains(filter) ||
                                 birthday.getPhone(true).contains(filter))).sorted().toArray(s -> new Birthday[s]);
@@ -60,27 +60,27 @@ public class BirthdayList {
         return array;
     }
 
-    public enum  BirthdayType{
+    public enum BirthdayType {
         PAST(-10),
         TODAY(0),
         FUTURE(10);
 
         final private int range;
 
-        BirthdayType(int range){
+        BirthdayType(int range) {
             this.range = range;
         }
 
-        public boolean check(Date date){
+        public boolean check(Date date) {
             return true;
         }
 
 
     }
 
-    public Birthday findBirthdayByName(final String name){
+    public Birthday findBirthdayByName(final String name) {
         return birthdays.stream().filter(birthday -> birthday.getListText().equals(name) ||
-        birthday.getListText(true).equals(name)).findFirst().orElse(null);
+                birthday.getListText(true).equals(name)).findFirst().orElse(null);
     }
 
 }

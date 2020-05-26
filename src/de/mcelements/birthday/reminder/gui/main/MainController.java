@@ -9,10 +9,10 @@ import javafx.beans.binding.StringBinding;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
-import javafx.scene.control.*;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.text.Font;
 
 import javax.swing.*;
@@ -31,7 +31,7 @@ public class MainController {
 
     Logger logger = Main.LOGGER;
 
-    public MainController(){
+    public MainController() {
         System.out.println("loading MainController...");
     }
 
@@ -67,14 +67,15 @@ public class MainController {
     }
 
     @FXML
-    protected void buttonLoadFile(){
+    protected void buttonLoadFile() {
         logger.info("button load file pressed");
 
         String path = PropertiesUtils.getInstance().getProperty(PropertiesUtils.PropertyType.SETTINGS, "path.last", false);
-        if(path == null || path.isEmpty()) {
+        if (path == null || path.isEmpty()) {
             try {
                 path = Main.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath();
-            } catch (URISyntaxException e) {}
+            } catch (URISyntaxException e) {
+            }
         }
 
         final JFileChooser chooser = new JFileChooser(path);
@@ -102,12 +103,12 @@ public class MainController {
     }
 
     @FXML
-    protected void textAreaTyped(){
+    protected void textAreaTyped() {
         System.out.println("textAreaTyped");
         updateListView(textFieldSearch.getText());
     }
 
-    public void updateLanguage(){
+    public void updateLanguage() {
         PropertiesUtils.PropertyType type = PropertiesUtils.PropertyType.MESSAGE;
         SimpleDateFormat guiSDF = new SimpleDateFormat(PropertiesUtils.getInstance().getProperty(type, "gui.title.date.format"));
         MainGui.stage.setTitle(PropertiesUtils.getInstance().getProperty(type, "gui.title", guiSDF.format(new Date())));
@@ -116,7 +117,7 @@ public class MainController {
         boolean ignoreLimit = checkBoxIgnoreLimit.isSelected();
         int limitPast = !ignoreLimit ? Integer.parseInt(PropertiesUtils.getInstance().getProperty(PropertiesUtils.PropertyType.SETTINGS, "limit.past")) : -1;
         int limitFuture = !ignoreLimit ? Integer.parseInt(PropertiesUtils.getInstance().getProperty(PropertiesUtils.PropertyType.SETTINGS, "limit.future")) : -1;
-        labelPast.setText(PropertiesUtils.getInstance().getProperty(PropertiesUtils.PropertyType.MESSAGE, "gui.label.past", labelSDF.format(getDate(limitPast*-1))));
+        labelPast.setText(PropertiesUtils.getInstance().getProperty(PropertiesUtils.PropertyType.MESSAGE, "gui.label.past", labelSDF.format(getDate(limitPast * -1))));
         labelToday.setText(PropertiesUtils.getInstance().getProperty(PropertiesUtils.PropertyType.MESSAGE, "gui.label.today", labelSDF.format(new Date())));
         labelFuture.setText(PropertiesUtils.getInstance().getProperty(PropertiesUtils.PropertyType.MESSAGE, "gui.label.future", labelSDF.format(getDate(limitFuture))));
 
@@ -130,16 +131,17 @@ public class MainController {
         updateListView();
     }
 
-    public void updateList(BirthdayList birthdayList){
+    public void updateList(BirthdayList birthdayList) {
         this.birthdayList = birthdayList;
         updateListView(textFieldSearch.getText());
     }
-    public void updateListView(){
-        if(textFieldSearch == null || birthdayList == null) return;
+
+    public void updateListView() {
+        if (textFieldSearch == null || birthdayList == null) return;
         updateListView(textFieldSearch.getText());
     }
 
-    public void updateListView(final String filter){
+    public void updateListView(final String filter) {
         boolean ignoreLimit = checkBoxIgnoreLimit.isSelected();
         int limitPast = !ignoreLimit ? Integer.parseInt(PropertiesUtils.getInstance().getProperty(PropertiesUtils.PropertyType.SETTINGS, "limit.past")) : -1;
         int limitFuture = !ignoreLimit ? Integer.parseInt(PropertiesUtils.getInstance().getProperty(PropertiesUtils.PropertyType.SETTINGS, "limit.future")) : -1;
@@ -168,39 +170,40 @@ public class MainController {
 
 
         SimpleDateFormat labelSDF = new SimpleDateFormat(PropertiesUtils.getInstance().getProperty(PropertiesUtils.PropertyType.MESSAGE, "gui.label.date.format"));
-        labelPast.setText(PropertiesUtils.getInstance().getProperty(PropertiesUtils.PropertyType.MESSAGE, "gui.label.past", labelSDF.format(getDate(limitPast*-1))));
+        labelPast.setText(PropertiesUtils.getInstance().getProperty(PropertiesUtils.PropertyType.MESSAGE, "gui.label.past", labelSDF.format(getDate(limitPast * -1))));
         labelToday.setText(PropertiesUtils.getInstance().getProperty(PropertiesUtils.PropertyType.MESSAGE, "gui.label.today", labelSDF.format(new Date())));
         labelFuture.setText(PropertiesUtils.getInstance().getProperty(PropertiesUtils.PropertyType.MESSAGE, "gui.label.future", labelSDF.format(getDate(limitFuture))));
 
 
     }
 
-    private void clearListView(){
+    private void clearListView() {
         listViewPast.getItems().clear();
         listViewToday.getItems().clear();
         listViewFuture.getItems().clear();
     }
 
-    private Date getDate(int days){
-        return new Date(System.currentTimeMillis()+(1000*60*60*24*days));
+    private Date getDate(int days) {
+        return new Date(System.currentTimeMillis() + (1000 * 60 * 60 * 24 * days));
     }
 
-    private void setContextMenuNew(ListView<Birthday> listView){
+    private void setContextMenuNew(ListView<Birthday> listView) {
         final String fontName = PropertiesUtils.getInstance().getPropertyOrDefault(PropertiesUtils.PropertyType.SETTINGS, "gui.list.font.name", "Arial");
         String size = PropertiesUtils.getInstance().getPropertyOrDefault(PropertiesUtils.PropertyType.SETTINGS, "gui.list.font.size", "12");
         int i = 12;
         try {
             i = Integer.parseInt(size);
-        }catch (Exception ex){}
+        } catch (Exception ex) {
+        }
         final int fontSize = i;
 
         Font font1;
-        try{
+        try {
             font1 = new Font(fontName, fontSize);
-        }catch (Exception e){
+        } catch (Exception e) {
             font1 = new Font(fontSize);
         }
-        if(font1 == null)
+        if (font1 == null)
             font1 = new Font(12);
 
         final Font font = font1;
@@ -213,7 +216,7 @@ public class MainController {
             MenuItem mail = new MenuItem(PropertiesUtils.getInstance().getProperty(PropertiesUtils.PropertyType.MESSAGE, "gui.list.mail"));
             mail.setOnAction((ActionEvent event) -> {
                 Birthday birthday = cell.getItem();
-                if(birthday.getMail() == null || birthday.getMail().isEmpty()){
+                if (birthday.getMail() == null || birthday.getMail().isEmpty()) {
                     JOptionPane.showMessageDialog(null, PropertiesUtils.getInstance().getProperty(PropertiesUtils.PropertyType.MESSAGE, "gui.list.mail.not.found"));
                 } else {
                     Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(birthday.getMail()), null);
@@ -229,7 +232,7 @@ public class MainController {
             MenuItem phone = new MenuItem(PropertiesUtils.getInstance().getProperty(PropertiesUtils.PropertyType.MESSAGE, "gui.list.phone"));
             phone.setOnAction((ActionEvent event) -> {
                 Birthday birthday = cell.getItem();
-                if(birthday.getPhone() == null){
+                if (birthday.getPhone() == null) {
                     JOptionPane.showMessageDialog(null, PropertiesUtils.getInstance().getProperty(PropertiesUtils.PropertyType.MESSAGE, "gui.list.phone.not.found"));
                 } else {
                     Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(birthday.getPhone()), null);
@@ -239,13 +242,14 @@ public class MainController {
 
             contextMenu.getItems().addAll(mail, phone);
 
-            StringBinding stringBinding = new StringBinding(){
+            StringBinding stringBinding = new StringBinding() {
                 {
                     super.bind(cell.itemProperty().asString());
                 }
+
                 @Override
                 protected String computeValue() {
-                    if(cell.itemProperty().getValue()==null){
+                    if (cell.itemProperty().getValue() == null) {
                         return "";
                     }
                     return cell.itemProperty().getValue().getListText();
@@ -261,7 +265,7 @@ public class MainController {
                     cell.setContextMenu(contextMenu);
                 }
             });
-            return cell ;
+            return cell;
         });
     }
 

@@ -15,7 +15,7 @@ public class Main {
     public static MainController mainController;
     public static SettingsController settingsController;
 
-    public static void main(String... args){
+    public static void main(String... args) {
 
         long start = System.currentTimeMillis();
         System.out.println("Start...");
@@ -25,7 +25,7 @@ public class Main {
         PropertiesUtils.getInstance();
         LOGGER.info("loading gui...");
         new Thread(() -> Application.launch(MainGui.class)).start();
-        LOGGER.info("done ("+(System.currentTimeMillis()-start)+" ms.)");
+        LOGGER.info("done (" + (System.currentTimeMillis() - start) + " ms.)");
     }
 
 }
