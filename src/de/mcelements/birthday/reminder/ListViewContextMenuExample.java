@@ -28,7 +28,6 @@ public class ListViewContextMenuExample extends Application {
             ContextMenu contextMenu = new ContextMenu();
 
 
-
             System.out.println("Item: " + cell);
 
 
@@ -56,7 +55,7 @@ public class ListViewContextMenuExample extends Application {
 
             System.out.println(cell.getItem());
 
-            return cell ;
+            return cell;
         });
 
         BorderPane root = new BorderPane(listView);

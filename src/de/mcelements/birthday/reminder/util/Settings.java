@@ -5,7 +5,7 @@ public class Settings {
     private static Settings instance;
 
     public static Settings getInstance() {
-        if(instance == null)
+        if (instance == null)
             instance = new Settings();
         return instance;
     }
@@ -15,7 +15,7 @@ public class Settings {
     private int limitPast;
     private int limitFuture;
 
-    private Settings(){
+    private Settings() {
         PropertiesUtils propertiesUtils = PropertiesUtils.getInstance();
         pathLast = propertiesUtils.getProperty(PropertiesUtils.PropertyType.SETTINGS, "path.last");
         limitPast = Integer.parseInt(propertiesUtils.getProperty(PropertiesUtils.PropertyType.SETTINGS, "limit.past"));
@@ -35,7 +35,7 @@ public class Settings {
     }
 
 
-    public void reload(){
+    public void reload() {
         instance = new Settings();
     }
 }

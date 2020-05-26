@@ -7,13 +7,13 @@ import javafx.scene.control.*;
 
 public class SettingsController {
 
-    public SettingsController(){
+    public SettingsController() {
 
 
     }
 
     @FXML
-    public void initialize(){
+    public void initialize() {
         System.out.println("initialize SettingsController...");
         updateLanguage();
 
@@ -23,7 +23,7 @@ public class SettingsController {
 
         menuLanguage.getItems().clear();
         for (PropertiesUtils.PropertyType type : PropertiesUtils.PropertyType.values()) {
-            if(!type.name().startsWith("MESSAGE_")) continue;
+            if (!type.name().startsWith("MESSAGE_")) continue;
             MenuItem item = new MenuItem(type.getDisplayName());
             item.setOnAction(event -> Utils.updateLanguage(type.name()));
             menuLanguage.getItems().addAll(item);
@@ -74,55 +74,54 @@ public class SettingsController {
 
 
     @FXML
-    protected void onTextLimitPast(){
+    protected void onTextLimitPast() {
         System.out.println("onSliderLimitPast");
     }
 
     @FXML
-    protected void onTextLimitFuture(){
+    protected void onTextLimitFuture() {
         System.out.println("onSliderLimitFuture");
 
     }
 
     @FXML
-    protected void onTextDailyStart(){
+    protected void onTextDailyStart() {
         System.out.println("onTextDailyStart");
 
     }
 
     @FXML
-    protected void onMenuLanguage(){
+    protected void onMenuLanguage() {
         System.out.println("onMenuLanguage");
 
     }
 
     @FXML
-    protected void onTextFontSize(){
+    protected void onTextFontSize() {
         System.out.println("onTextFontSize");
 
     }
 
     @FXML
-    protected void onTextFontName(){
+    protected void onTextFontName() {
         System.out.println("onTextFontName");
 
     }
 
     @FXML
-    protected void onButtonApply(){
+    protected void onButtonApply() {
         System.out.println("onButtonApply");
 
     }
 
     @FXML
-    protected void onButtonCancel(){
+    protected void onButtonCancel() {
         System.out.println("onButtonCancel");
 
     }
 
 
-
-    public void updateLanguage(){
+    public void updateLanguage() {
         PropertiesUtils.PropertyType type = PropertiesUtils.PropertyType.MESSAGE;
         PropertiesUtils propertiesUtils = PropertiesUtils.getInstance();
         labelLimitPast.setText(propertiesUtils.getProperty(type, "gui.settings.label.limit.past"));
